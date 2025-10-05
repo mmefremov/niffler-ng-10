@@ -9,6 +9,11 @@ package guru.qa.niffler.config;
   }
 
   @Override
+  public String authUrl() {
+   return "http://localhost:9000/";
+  }
+
+  @Override
   public String spendUrl() {
    return "http://localhost:8093/";
   }

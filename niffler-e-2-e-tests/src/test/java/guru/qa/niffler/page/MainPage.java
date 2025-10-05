@@ -5,13 +5,29 @@ import com.codeborne.selenide.SelenideElement;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
 
 public class MainPage {
+
+  private final SelenideElement profileMenuButton = $("[data-testid='PersonIcon']");
+  private final SelenideElement profileLink = $x("//a[@href='/profile']");
+  private final SelenideElement statistics = $("#stat");
   private final SelenideElement spendingTable = $("#spendings");
 
   public MainPage checkThatPageLoaded() {
+    statistics.shouldBe(visible);
     spendingTable.should(visible);
     return this;
+  }
+
+  public MainPage openProfileMenu() {
+    profileMenuButton.click();
+    return this;
+  }
+
+  public ProfilePage openProfile() {
+    profileLink.click();
+    return new ProfilePage();
   }
 
   public EditSpendingPage editSpending(String description) {
