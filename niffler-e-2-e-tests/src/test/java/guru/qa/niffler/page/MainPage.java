@@ -10,7 +10,8 @@ import static com.codeborne.selenide.Selenide.$x;
 public class MainPage {
 
   private final SelenideElement profileMenuButton = $("[data-testid='PersonIcon']");
-  private final SelenideElement profileLink = $x("//a[@href='/profile']");
+  private final SelenideElement profileLink = $x("//*[@href='/profile']/parent::li");
+  private final SelenideElement friendsLink = $x("//*[@href='/people/friends']/parent::li");
   private final SelenideElement statistics = $("#stat");
   private final SelenideElement spendingTable = $("#spendings");
 
@@ -28,6 +29,11 @@ public class MainPage {
   public ProfilePage openProfile() {
     profileLink.click();
     return new ProfilePage();
+  }
+
+  public FriendsPage openFriends() {
+    friendsLink.click();
+    return new FriendsPage();
   }
 
   public EditSpendingPage editSpending(String description) {
