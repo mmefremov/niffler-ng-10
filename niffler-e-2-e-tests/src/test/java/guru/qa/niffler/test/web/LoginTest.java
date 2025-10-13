@@ -5,7 +5,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.service.AuthApiClient;
-import guru.qa.niffler.util.FakerUtils;
+import guru.qa.niffler.util.RandomDataUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -24,8 +24,8 @@ class LoginTest {
 
   @BeforeAll
   static void setup() throws IOException {
-    registeredUsername = FakerUtils.getUserName();
-    registeredPassword = FakerUtils.getPassword();
+    registeredUsername = RandomDataUtils.randomUsername();
+    registeredPassword = RandomDataUtils.randomPassword();
     var response = new AuthApiClient().register(registeredUsername, registeredPassword);
     assertThat(response.code()).isEqualTo(HttpStatus.CREATED_201);
   }
@@ -41,7 +41,7 @@ class LoginTest {
   @Test
   @DisplayName("Пользователь остается на странице входа при вводе неверных данных")
   void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
-    String wrongPassword = FakerUtils.getPassword();
+    String wrongPassword = RandomDataUtils.randomPassword();
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
             .tryToLogin(registeredUsername, wrongPassword)

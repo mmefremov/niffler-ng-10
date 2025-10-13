@@ -3,7 +3,7 @@ package guru.qa.niffler.jupiter.extension;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.service.SpendApiClient;
-import guru.qa.niffler.util.FakerUtils;
+import guru.qa.niffler.util.RandomDataUtils;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -25,7 +25,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                         annotation -> {
                             CategoryJson createdCategory = spendApiClient.createCategory(
                                     new CategoryJson(null,
-                                                     FakerUtils.getCategory(),
+                                                     RandomDataUtils.randomCategoryName(),
                                                      annotation.username(),
                                                      false)
                             );
