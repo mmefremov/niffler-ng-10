@@ -74,7 +74,7 @@ public class UsersQueueExtension implements
     @Override
     public void beforeTestExecution(ExtensionContext context) {
         Map<UserType, Queue<StaticUser>> usersMap = Arrays.stream(context.getRequiredTestMethod().getParameters())
-                .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class))
+                .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class) && p.getType().isAssignableFrom(StaticUser.class))
                 .map(p -> p.getAnnotation(UserType.class))
                 .map(userType -> {
                     Optional<StaticUser> userOptional = Optional.empty();
