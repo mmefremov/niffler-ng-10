@@ -104,13 +104,16 @@ public class UsersQueueExtension implements
     @SuppressWarnings("unchecked")
     @Override
     public void afterTestExecution(ExtensionContext context) {
-        USED_USERS
-                .get(context.getUniqueId())
-                .forEach((UserType userType, List<StaticUser> usersList) -> {
-                             getQueueByUserType(userType).addAll(usersList);
-                             usersList.clear();
-                         }
-                );
+        Arrays.stream(context.getRequiredTestMethod().getParameters())
+                .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class) && p.getType().isAssignableFrom(StaticUser.class))
+                .map(p -> p.getAnnotation(UserType.class))
+                .forEach(userType -> {
+                    List<StaticUser> usersList = USED_USERS
+                            .get(context.getUniqueId())
+                            .get(userType);
+                    getQueueByUserType(userType).addAll(usersList);
+                    usersList.clear();
+                });
     }
 
     @Override
