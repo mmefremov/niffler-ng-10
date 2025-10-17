@@ -3,23 +3,23 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.Category;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(BrowserExtension.class)
+@WebTest
 class ProfileTest {
 
     private static final Config CFG = Config.getInstance();
     private static final String REGISTERED_USERNAME = "duck";
     private static final String REGISTERED_PASSWORD = "12345";
 
-    @Category(
+    @User(
             username = REGISTERED_USERNAME,
-            archived = true
+            categories = @Category(archived = true)
     )
     @Test
     @DisplayName("Профиль содержит архивную категорию")
@@ -34,8 +34,10 @@ class ProfileTest {
                 .checkActiveCategoryIsDisplayed(category.name());
     }
 
-    @Category(
-            username = REGISTERED_USERNAME)
+    @User(
+            username = REGISTERED_USERNAME,
+            categories = @Category
+    )
     @Test
     @DisplayName("Профиль содержит активную категорию")
     void activeCategoryShouldPresentInCategoriesList(CategoryJson category) {
