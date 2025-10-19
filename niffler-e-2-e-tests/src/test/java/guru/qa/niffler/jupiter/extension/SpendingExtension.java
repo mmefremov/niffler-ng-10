@@ -4,8 +4,8 @@ import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
-import guru.qa.niffler.service.SpendApiClient;
 import guru.qa.niffler.service.SpendClient;
+import guru.qa.niffler.service.SpendDbClient;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -19,7 +19,8 @@ import java.util.Date;
 public class SpendingExtension implements BeforeEachCallback, ParameterResolver {
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(SpendingExtension.class);
-    private final SpendClient spendClient = new SpendApiClient();
+
+    private final SpendClient spendClient = new SpendDbClient();
 
     @Override
     public void beforeEach(ExtensionContext context) {
@@ -30,26 +31,23 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                 user -> {
                     if (ArrayUtils.isNotEmpty(user.spendings())) {
                         Spending spending = user.spendings()[0];
-                        SpendJson created;
-                        created = spendClient.createSpend(
-                                new SpendJson(
+                        SpendJson spendJson = new SpendJson(
+                                null,
+                                new Date(),
+                                new CategoryJson(
                                         null,
-                                        new Date(),
-                                        new CategoryJson(
-                                                null,
-                                                spending.category(),
-                                                user.username(),
-                                                false
-                                        ),
-                                        spending.currency(),
-                                        spending.amount(),
-                                        spending.description(),
-                                        user.username()
-                                )
+                                        spending.category(),
+                                        user.username(),
+                                        false
+                                ),
+                                spending.currency(),
+                                spending.amount(),
+                                spending.description(),
+                                user.username()
                         );
                         context.getStore(NAMESPACE).put(
                                 context.getUniqueId(),
-                                created
+                                spendClient.createSpend(spendJson)
                         );
                     }
                 }
