@@ -52,12 +52,13 @@ class FriendsTest {
     }
 
     @Test
-    @DisplayName("Таблица друзей содержит исходящий запрос")
+    @DisplayName("Список всех людей содержит исходящий запрос")
     void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
                 .openProfileMenu()
                 .openFriends()
+                .openPeopleTab()
                 .allPeoplesTableShouldContainWaitingAnswerFromFriend(user.outcome());
     }
 }

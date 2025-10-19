@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 @WebTest
 public class SpendingTest {
 
-  private static final Config CFG = Config.getInstance();
+    private static final Config CFG = Config.getInstance();
 
     @User(
             username = "duck",
@@ -25,16 +25,16 @@ public class SpendingTest {
                             description = "Обучение Niffler 2.0 юбилейный поток!"
                     )
             }
-  )
-  @Test
-  void spendingDescriptionShouldBeEditedByTableAction(SpendJson spending) {
-    final String newDescription = "Обучение Niffler Next Generation";
+    )
+    @Test
+    void spendingDescriptionShouldBeEditedByTableAction(SpendJson spending) {
+        final String newDescription = "Обучение Niffler Next Generation";
 
-    Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .login("duck", "12345")
-        .editSpending(spending.description())
-        .setNewSpendingDescription(newDescription)
-        .save()
-        .checkThatTableContains(newDescription);
-  }
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login("duck", "12345")
+                .editSpending(spending.description())
+                .setNewSpendingDescription(newDescription)
+                .save()
+                .checkThatTableContains(newDescription);
+    }
 }

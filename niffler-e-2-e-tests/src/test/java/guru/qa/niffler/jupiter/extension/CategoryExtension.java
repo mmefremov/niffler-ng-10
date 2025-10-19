@@ -4,6 +4,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.service.SpendApiClient;
 import guru.qa.niffler.util.RandomDataUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -23,7 +24,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                         context.getRequiredTestMethod(), User.class)
                 .ifPresent(
                         user -> {
-                            if (user.categories().length > 0) {
+                            if (ArrayUtils.isNotEmpty(user.categories())) {
                                 CategoryJson createdCategory = spendApiClient.createCategory(
                                         new CategoryJson(null,
                                                          RandomDataUtils.randomCategoryName(),
@@ -36,9 +37,9 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                                                              createdCategory.name(),
                                                              createdCategory.username(),
                                                              true));
-                            }
-                            context.getStore(NAMESPACE)
-                                    .put(context.getUniqueId(), createdCategory);
+                                }
+                                context.getStore(NAMESPACE)
+                                        .put(context.getUniqueId(), createdCategory);
                             }
                         });
     }

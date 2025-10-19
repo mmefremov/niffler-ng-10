@@ -13,120 +13,115 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SpendApiClient implements SpendClient{
+public class SpendApiClient implements SpendClient {
 
-  private static final Config CFG = Config.getInstance();
+    private static final Config CFG = Config.getInstance();
 
-  private final Retrofit retrofit = new Retrofit.Builder()
-      .baseUrl(CFG.spendUrl())
-      .addConverterFactory(JacksonConverterFactory.create())
-      .build();
+    private final Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(CFG.spendUrl())
+            .addConverterFactory(JacksonConverterFactory.create())
+            .build();
 
-  private final SpendApi spendApi = retrofit.create(SpendApi.class);
+    private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
-  public SpendJson getSpend(String id, String username) {
-    final Response<SpendJson> response;
-    try {
-      response = spendApi.getSpendById(id, username)
-              .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
+    @Override
+    public SpendJson createSpend(SpendJson spend) {
+        final Response<SpendJson> response;
+        try {
+            response = spendApi.createSpend(spend)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertThat(response.code()).isEqualTo(HttpStatus.CREATED_201);
+        return response.body();
     }
-    assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-    return response.body();
-  }
 
-  public List<SpendJson> getSpends(String username, CurrencyValues filterCurrency, Date from, Date to) {
-    final Response<List<SpendJson>> response;
-    try {
-      response = spendApi.getSpends(username, filterCurrency, from, to)
-              .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
+    public SpendJson editSpend(SpendJson spend) {
+        final Response<SpendJson> response;
+        try {
+            response = spendApi.editSpend(spend)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
+        return response.body();
     }
-    assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-    return response.body();
-  }
 
-  @Override
-  public SpendJson createSpend(SpendJson spend) {
-    final Response<SpendJson> response;
-    try {
-      response = spendApi.createSpend(spend)
-              .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
+    public SpendJson getSpend(String id) {
+        final Response<SpendJson> response;
+        try {
+            response = spendApi.getSpend(id)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
+        return response.body();
     }
-    assertThat(response.code()).isEqualTo(HttpStatus.CREATED_201);
-    return response.body();
-  }
 
-  public SpendJson editSpend(SpendJson spend) {
-    final Response<SpendJson> response;
-    try {
-      response = spendApi.editSpend(spend)
-              .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
+    public List<SpendJson> allSpends(String username, CurrencyValues filterCurrency, Date from, Date to) {
+        final Response<List<SpendJson>> response;
+        try {
+            response = spendApi.allSpends(username, filterCurrency, from, to)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
+        return response.body();
     }
-    assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-    return response.body();
-  }
 
-  public void deleteSpends(String username, List<String> ids) {
-    final Response<Void> response;
-    try {
-      response = spendApi.deleteSpends(username, ids)
-              .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
+    public void removeSpends(String username, List<String> ids) {
+        final Response<Void> response;
+        try {
+            response = spendApi.removeSpends(username, ids)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertThat(response.code()).isEqualTo(HttpStatus.ACCEPTED_202);
     }
-    assertThat(response.code()).isEqualTo(HttpStatus.ACCEPTED_202);
-  }
 
-  @Override
-  public CategoryJson createCategory(CategoryJson category) {
-    final Response<CategoryJson> response;
-    try {
-      response = spendApi.addCategory(category)
-              .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
+    @Override
+    public CategoryJson createCategory(CategoryJson category) {
+        final Response<CategoryJson> response;
+        try {
+            response = spendApi.addCategory(category)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
+        return response.body();
     }
-    assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-    return response.body();
-  }
 
-  public CategoryJson updateCategory(CategoryJson category) {
-    final Response<CategoryJson> response;
-    try {
-      response = spendApi.updateCategory(category)
-              .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
+    @Override
+    public CategoryJson updateCategory(CategoryJson category) {
+        final Response<CategoryJson> response;
+        try {
+            response = spendApi.updateCategory(category)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
+        return response.body();
     }
-    assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-    return response.body();
-  }
 
-  public List<CategoryJson> getCategories(String username, Boolean excludeArchived) {
-    final Response<List<CategoryJson>> response;
-    try {
-      response = spendApi.getCategories(username, excludeArchived)
-              .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
+    public List<CategoryJson> allCategories(String username) {
+        final Response<List<CategoryJson>> response;
+        try {
+            response = spendApi.allCategories(username)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
+        return response.body();
     }
-    assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-    return response.body();
-  }
-
-  @Override
-  public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
-    throw new UnsupportedOperationException("Not implemented :(");
-  }
 }

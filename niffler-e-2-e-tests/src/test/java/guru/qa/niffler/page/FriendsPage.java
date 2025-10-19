@@ -14,12 +14,10 @@ public class FriendsPage {
 
     private final SelenideElement allPeopleTab = $x("//a[@href='/people/all']");
     private final ElementsCollection requestsTable = $$("#requests tr");
+    private final ElementsCollection friendsTable = $$("#friends tr");
     private final By acceptButton = By.xpath(".//button[text()='Accept']");
     private final By declineButton = By.xpath(".//button[text()='Decline']");
-    private final ElementsCollection friendsTable = $$("#friends tr");
     private final By unfriendButton = By.xpath(".//button[text()='Unfriend']");
-    private final ElementsCollection allPeopleTable = $$("#all tr");
-    private final By requestLabel = By.cssSelector(".MuiChip-label");
 
     public FriendsPage requestsTableShouldContainIncomeFriend(String friendName) {
         SelenideElement friendRow = requestsTable.find(text(friendName)).shouldBe(visible);
@@ -39,11 +37,8 @@ public class FriendsPage {
         return this;
     }
 
-    public FriendsPage allPeoplesTableShouldContainWaitingAnswerFromFriend(String friendName) {
+    public PeoplePage openPeopleTab() {
         allPeopleTab.click();
-        allPeopleTable.find(text(friendName)).shouldBe(visible)
-                .find(requestLabel).shouldBe(visible)
-                .shouldHave(text("Waiting..."));
-        return this;
+        return new PeoplePage();
     }
 }

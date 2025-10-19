@@ -18,33 +18,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebTest
 class LoginTest {
 
-  private static final Config CFG = Config.getInstance();
-  private static String registeredUsername;
-  private static String registeredPassword;
+    private static final Config CFG = Config.getInstance();
+    private static String registeredUsername;
+    private static String registeredPassword;
 
-  @BeforeAll
-  static void setup() throws IOException {
-    registeredUsername = RandomDataUtils.randomUsername();
-    registeredPassword = RandomDataUtils.randomPassword();
-    var response = new AuthApiClient().register(registeredUsername, registeredPassword);
-    assertThat(response.code()).isEqualTo(HttpStatus.CREATED_201);
-  }
+    @BeforeAll
+    static void setup() throws IOException {
+        registeredUsername = RandomDataUtils.randomUsername();
+        registeredPassword = RandomDataUtils.randomPassword();
+        var response = new AuthApiClient().register(registeredUsername, registeredPassword);
+        assertThat(response.code()).isEqualTo(HttpStatus.CREATED_201);
+    }
 
-  @Test
-  @DisplayName("Успешный вход пользователя")
-  void mainPageShouldBeDisplayedAfterSuccessLogin() {
-    Selenide.open(CFG.frontUrl(), LoginPage.class)
-            .login(registeredUsername, registeredPassword)
-            .checkThatPageLoaded();
-  }
+    @Test
+    @DisplayName("Успешный вход пользователя")
+    void mainPageShouldBeDisplayedAfterSuccessLogin() {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(registeredUsername, registeredPassword)
+                .checkThatPageLoaded();
+    }
 
-  @Test
-  @DisplayName("Пользователь остается на странице входа при вводе неверных данных")
-  void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
-    String wrongPassword = RandomDataUtils.randomPassword();
+    @Test
+    @DisplayName("Пользователь остается на странице входа при вводе неверных данных")
+    void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
+        String wrongPassword = RandomDataUtils.randomPassword();
 
-    Selenide.open(CFG.frontUrl(), LoginPage.class)
-            .tryToLogin(registeredUsername, wrongPassword)
-            .checkFormErrorText("Bad credentials");
-  }
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .tryToLogin(registeredUsername, wrongPassword)
+                .checkFormErrorText("Bad credentials");
+    }
 }

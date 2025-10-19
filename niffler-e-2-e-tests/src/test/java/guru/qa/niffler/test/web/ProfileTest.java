@@ -36,7 +36,7 @@ class ProfileTest {
 
     @User(
             username = REGISTERED_USERNAME,
-            categories = @Category
+            categories = @Category(archived = false)
     )
     @Test
     @DisplayName("Профиль содержит активную категорию")

@@ -10,12 +10,12 @@ import java.io.IOException;
 
 public class RegistrationTest {
 
-  private final AuthApiClient authApiClient = new AuthApiClient();
+    private final AuthApiClient authApiClient = new AuthApiClient();
 
-  @Test
-  @DisabledByIssue("2")
-  void newUserShouldRegisteredByApiCall() throws IOException {
-    final Response<Void> response = authApiClient.register("bazz", "12345");
-    Assertions.assertEquals(201, response.code());
-  }
+    @Test
+    @DisabledByIssue("2")
+    void newUserShouldRegisteredByApiCall() throws IOException {
+        final Response<Void> response = authApiClient.register("bazz", "12345");
+        Assertions.assertEquals(201, response.code());
+    }
 }

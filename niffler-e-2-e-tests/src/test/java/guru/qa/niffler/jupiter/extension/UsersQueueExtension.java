@@ -40,6 +40,7 @@ public class UsersQueueExtension implements
             String friend,
             String income,
             String outcome) {
+
     }
 
     private static final Queue<StaticUser> EMPTY_USERS = new ConcurrentLinkedQueue<>();
