@@ -81,9 +81,9 @@ public class CategoryDaoJdbc implements CategoryDao {
              PreparedStatement statement = connection.prepareStatement(
                      "UPDATE category SET name = ?, username = ?, archived = ? WHERE id = ?"
              )) {
-            statement.setObject(1, categoryEntity.getName());
+            statement.setString(1, categoryEntity.getName());
             statement.setObject(2, categoryEntity.getUsername());
-            statement.setObject(3, categoryEntity.isArchived());
+            statement.setBoolean(3, categoryEntity.isArchived());
             statement.setObject(4, categoryEntity.getId());
             statement.executeUpdate();
             return categoryEntity;

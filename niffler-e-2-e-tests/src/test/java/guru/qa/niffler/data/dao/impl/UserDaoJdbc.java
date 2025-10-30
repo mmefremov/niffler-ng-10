@@ -109,7 +109,7 @@ public class UserDaoJdbc implements UserDao {
     private UserEntity getUserEntity(ResultSet resultSet) throws SQLException {
         UserEntity entity = new UserEntity();
         entity.setId(resultSet.getObject("id", UUID.class));
-        entity.setCurrency(resultSet.getObject("currency", CurrencyValues.class));
+        entity.setCurrency(CurrencyValues.valueOf(resultSet.getString("currency")));
         entity.setUsername(resultSet.getString("username"));
         entity.setFirstName(resultSet.getString("firstname"));
         entity.setSurname(resultSet.getString("surname"));
