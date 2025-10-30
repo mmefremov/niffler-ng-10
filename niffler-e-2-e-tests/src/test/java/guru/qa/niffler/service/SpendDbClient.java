@@ -19,9 +19,12 @@ public class SpendDbClient implements SpendClient {
     @Override
     public SpendJson createSpend(SpendJson spend) {
         SpendEntity spendEntity = SpendEntity.fromJson(spend);
-        if (spendEntity.getCategory().getId() == null) {
-            CategoryEntity categoryEntity = categoryDao.create(spendEntity.getCategory());
-            spendEntity.setCategory(categoryEntity);
+        CategoryEntity category = spendEntity.getCategory();
+        if (category.getId() == null) {
+            spendEntity.setCategory(
+                    categoryDao.findCategoryByUsernameAndCategoryName(category.getName(), category.getUsername())
+                            .orElseGet(() -> CategoryEntity.fromJson(createCategory(CategoryJson.fromEntity(category))))
+            );
         }
         return SpendJson.fromEntity(
                 spendDao.create(spendEntity)
