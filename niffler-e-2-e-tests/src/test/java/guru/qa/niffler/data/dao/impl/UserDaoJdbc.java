@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -98,6 +100,25 @@ public class UserDaoJdbc implements UserDao {
         )) {
             statement.setObject(1, user.getId());
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<UserEntity> findAll() {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM user"
+        )) {
+            statement.execute();
+            try (ResultSet resultSet = statement.getResultSet()) {
+                List<UserEntity> entities = new ArrayList<>();
+                while (resultSet.next()) {
+                    UserEntity entity = getUserEntity(resultSet);
+                    entities.add(entity);
+                }
+                return entities;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

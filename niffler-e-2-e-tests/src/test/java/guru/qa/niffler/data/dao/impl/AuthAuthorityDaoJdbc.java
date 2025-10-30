@@ -5,8 +5,12 @@ import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
 
@@ -29,6 +33,28 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                 statement.clearParameters();
             }
             statement.executeBatch();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<AuthorityEntity> findAll() {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM authority"
+        )) {
+            statement.execute();
+            try (ResultSet resultSet = statement.getResultSet()) {
+                List<AuthorityEntity> entities = new ArrayList<>();
+                while (resultSet.next()) {
+                    AuthorityEntity entity = new AuthorityEntity();
+                    entity.setId(resultSet.getObject("id", UUID.class));
+                    entity.setUserId(resultSet.getObject("user_id", UUID.class));
+                    entity.setAuthority(resultSet.getString("authority"));
+                    entities.add(entity);
+                }
+                return entities;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

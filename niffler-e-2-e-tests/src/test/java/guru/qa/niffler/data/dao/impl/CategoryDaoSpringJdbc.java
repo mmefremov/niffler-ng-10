@@ -57,7 +57,6 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     @Override
     public CategoryEntity update(CategoryEntity category) {
         JdbcTemplate template = new JdbcTemplate(dataSource);
-        KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(
                     "UPDATE category SET name = ?, username = ?, archived = ? WHERE id = ?");
@@ -101,5 +100,14 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
             statement.setObject(1, category.getId());
             return statement;
         });
+    }
+
+    @Override
+    public List<CategoryEntity> findAll() {
+        JdbcTemplate template = new JdbcTemplate(dataSource);
+        return template.query(
+                "SELECT * FROM category",
+                CategoryEntityRowMapper.instance
+        );
     }
 }
