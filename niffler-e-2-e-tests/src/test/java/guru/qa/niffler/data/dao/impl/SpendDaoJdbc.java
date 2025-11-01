@@ -114,6 +114,25 @@ public class SpendDaoJdbc implements SpendDao {
         }
     }
 
+    @Override
+    public List<SpendEntity> findAll() {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM spend"
+        )) {
+            statement.execute();
+            try (ResultSet resultSet = statement.getResultSet()) {
+                List<SpendEntity> entities = new ArrayList<>();
+                while (resultSet.next()) {
+                    SpendEntity entity = getSpendEntity(resultSet);
+                    entities.add(entity);
+                }
+                return entities;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private SpendEntity getSpendEntity(ResultSet resultSet) throws SQLException {
         SpendEntity entity = new SpendEntity();
         entity.setId(resultSet.getObject("id", UUID.class));
