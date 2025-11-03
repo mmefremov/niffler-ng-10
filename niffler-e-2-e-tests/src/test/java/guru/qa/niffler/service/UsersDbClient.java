@@ -14,6 +14,7 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
+import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,8 +32,13 @@ public class UsersDbClient implements UsersClient {
     private final UserdataUserDao udUserDao = new UserdataUserDaoSpringJdbc();
 
     private final TransactionTemplate txTemplate = new TransactionTemplate(
-            new JdbcTransactionManager(
-                    DataSources.dataSource(CFG.authJdbcUrl())
+            new ChainedTransactionManager(
+                    new JdbcTransactionManager(
+                            DataSources.dataSource(CFG.authJdbcUrl())
+                    ),
+                    new JdbcTransactionManager(
+                            DataSources.dataSource(CFG.userdataJdbcUrl())
+                    )
             )
     );
 
@@ -43,8 +49,8 @@ public class UsersDbClient implements UsersClient {
 
     @Override
     public UserJson createUser(UserJson user) {
-        return xaTransactionTemplate.execute(
-                () -> {
+        return txTemplate.execute(
+                status -> {
                     AuthUserEntity authUser = new AuthUserEntity();
                     authUser.setUsername(user.username());
                     authUser.setPassword(pe.encode("12345"));
