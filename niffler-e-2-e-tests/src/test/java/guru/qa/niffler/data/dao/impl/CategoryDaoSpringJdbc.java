@@ -92,7 +92,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     }
 
     @Override
-    public void deleteCategory(CategoryEntity category) {
+    public void delete(CategoryEntity category) {
         JdbcTemplate template = new JdbcTemplate(dataSource);
         template.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(

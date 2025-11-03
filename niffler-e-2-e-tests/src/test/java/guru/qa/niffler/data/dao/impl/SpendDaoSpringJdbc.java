@@ -76,7 +76,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     }
 
     @Override
-    public void deleteSpend(SpendEntity spend) {
+    public void delete(SpendEntity spend) {
         JdbcTemplate template = new JdbcTemplate(dataSource);
         template.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(
