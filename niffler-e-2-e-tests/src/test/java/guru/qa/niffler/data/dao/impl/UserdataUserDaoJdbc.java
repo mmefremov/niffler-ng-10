@@ -1,10 +1,10 @@
 package guru.qa.niffler.data.dao.impl;
 
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.model.CurrencyValues;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,28 +14,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserDaoJdbc implements UserDao {
+import static guru.qa.niffler.data.tpl.Connections.holder;
 
-    private final Connection connection;
+public class UserdataUserDaoJdbc implements UserDao {
 
-    public UserDaoJdbc(Connection connection) {
-        this.connection = connection;
-    }
+    private static final Config CFG = Config.getInstance();
+    private static final String URL = CFG.userdataJdbcUrl();
 
     @Override
     public UserEntity createUser(UserEntity user) {
-        try (PreparedStatement statement = connection.prepareStatement(
+        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "INSERT INTO user (username, currency, firstname, surname, photo, photo_small, full_name) " +
                 "VALUES ( ?, ?, ?, ?, ?, ?, ?)",
                 Statement.RETURN_GENERATED_KEYS
         )) {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getCurrency().name());
-            statement.setString(3, user.getFirstName());
+            statement.setString(3, user.getFirstname());
             statement.setString(4, user.getSurname());
             statement.setObject(5, user.getPhoto());
             statement.setObject(6, user.getPhotoSmall());
-            statement.setString(7, user.getFullName());
+            statement.setString(7, user.getFullname());
             statement.executeUpdate();
 
             UUID generatedKey;
@@ -55,7 +54,7 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public Optional<UserEntity> findById(UUID id) {
-        try (PreparedStatement statement = connection.prepareStatement(
+        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "SELECT * FROM user WHERE id = ?"
         )) {
             statement.setObject(1, id);
@@ -75,7 +74,7 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-        try (PreparedStatement statement = connection.prepareStatement(
+        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "SELECT * FROM user WHERE username = ?"
         )) {
             statement.setObject(1, username);
@@ -95,7 +94,7 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public void delete(UserEntity user) {
-        try (PreparedStatement statement = connection.prepareStatement(
+        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "DELETE FROM user WHERE id = ?"
         )) {
             statement.setObject(1, user.getId());
@@ -107,7 +106,7 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public List<UserEntity> findAll() {
-        try (PreparedStatement statement = connection.prepareStatement(
+        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "SELECT * FROM user"
         )) {
             statement.execute();
@@ -129,11 +128,11 @@ public class UserDaoJdbc implements UserDao {
         entity.setId(resultSet.getObject("id", UUID.class));
         entity.setCurrency(CurrencyValues.valueOf(resultSet.getString("currency")));
         entity.setUsername(resultSet.getString("username"));
-        entity.setFirstName(resultSet.getString("firstname"));
+        entity.setFirstname(resultSet.getString("firstname"));
         entity.setSurname(resultSet.getString("surname"));
         entity.setPhoto(resultSet.getBytes("photo"));
         entity.setPhotoSmall(resultSet.getBytes("photo_small"));
-        entity.setFullName(resultSet.getString("full_name"));
+        entity.setFullname(resultSet.getString("full_name"));
         return entity;
     }
 }

@@ -32,9 +32,9 @@ public record UserJson(
         return new UserJson(
                 entity.getId(),
                 entity.getUsername(),
-                entity.getFirstName(),
+                entity.getFirstname(),
                 entity.getSurname(),
-                entity.getFullName(),
+                entity.getFullname(),
                 entity.getCurrency(),
                 entity.getPhoto() != null && entity.getPhoto().length > 0 ? new String(entity.getPhoto(), StandardCharsets.UTF_8) : null,
                 entity.getPhotoSmall() != null && entity.getPhotoSmall().length > 0 ? new String(entity.getPhotoSmall(), StandardCharsets.UTF_8) : null,

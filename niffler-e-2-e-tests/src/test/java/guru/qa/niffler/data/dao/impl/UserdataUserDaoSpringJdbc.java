@@ -31,11 +31,11 @@ public class UserdataUserDaoSpringJdbc implements UserdataUserDao {
             );
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getCurrency().name());
-            statement.setString(3, user.getFirstName());
+            statement.setString(3, user.getFirstname());
             statement.setString(4, user.getSurname());
             statement.setBytes(5, user.getPhoto());
             statement.setBytes(6, user.getPhotoSmall());
-            statement.setString(7, user.getFullName());
+            statement.setString(7, user.getFullname());
             return statement;
         }, keyHolder);
 

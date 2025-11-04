@@ -27,7 +27,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setObject(1, authority[i].getUserId());
+                        ps.setObject(1, authority[i].getUser().getId());
                         ps.setString(2, authority[i].getAuthority().name());
                     }
 
@@ -49,7 +49,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
                     public AuthorityEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
                         AuthorityEntity entity = new AuthorityEntity();
                         entity.setId(rs.getObject("id", UUID.class));
-                        entity.setUserId(rs.getObject("user_id", UUID.class));
+                        // entity.setUserId(rs.getObject("user_id", UUID.class));
                         entity.setAuthority(Authority.valueOf(rs.getString("authority")));
                         return entity;
                     }

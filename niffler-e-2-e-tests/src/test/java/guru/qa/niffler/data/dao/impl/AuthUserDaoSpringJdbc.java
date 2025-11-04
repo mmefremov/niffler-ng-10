@@ -34,10 +34,10 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
             );
             statement.setString(1, user.getUsername());
             statement.setString(2, passwordEncoder.encode(user.getPassword()));
-            statement.setBoolean(3, user.isEnabled());
-            statement.setBoolean(4, user.isAccountNonExpired());
-            statement.setBoolean(5, user.isAccountNonLocked());
-            statement.setBoolean(6, user.isCredentialsNonExpired());
+            statement.setBoolean(3, user.getEnabled());
+            statement.setBoolean(4, user.getCredentialsNonExpired());
+            statement.setBoolean(5, user.getAccountNonLocked());
+            statement.setBoolean(6, user.getAccountNonExpired());
             return statement;
         }, keyHolder);
 
