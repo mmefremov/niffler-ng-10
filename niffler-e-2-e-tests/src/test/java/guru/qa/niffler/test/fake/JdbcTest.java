@@ -8,6 +8,8 @@ import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Date;
 
@@ -33,20 +35,18 @@ class JdbcTest {
                 ));
     }
 
-    @Test
-    void xaTxTest() {
-        new UsersDbClient().createUser(
-                new UserJson(
-                        null,
-                        "valentin",
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.RUB,
-                        null,
-                        null,
-                        null
-                )
+    static UsersDbClient usersDbClient = new UsersDbClient();
+
+    @ValueSource(strings = {
+            "valentin"
+    })
+    @ParameterizedTest
+    void springJdbcTest(String uname) {
+        UserJson user = usersDbClient.createUser(
+                uname,
+                "12345"
         );
+        usersDbClient.addIncomeInvitation(user, 1);
+        usersDbClient.addOutcomeInvitation(user, 1);
     }
 }
