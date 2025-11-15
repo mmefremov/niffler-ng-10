@@ -3,6 +3,7 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.CategoryDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
+import guru.qa.niffler.data.mapper.CategoryEntityRowMapper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,11 +57,7 @@ public class CategoryDaoJdbc implements CategoryDao {
             ps.execute();
             try (ResultSet rs = ps.getResultSet()) {
                 if (rs.next()) {
-                    CategoryEntity ce = new CategoryEntity();
-                    ce.setId(rs.getObject("id", UUID.class));
-                    ce.setUsername(rs.getString("username"));
-                    ce.setName(rs.getString("name"));
-                    ce.setArchived(rs.getBoolean("archived"));
+                    CategoryEntity ce = CategoryEntityRowMapper.instance.mapRow(rs, 1);
                     return Optional.of(ce);
                 } else {
                     return Optional.empty();
@@ -97,7 +94,7 @@ public class CategoryDaoJdbc implements CategoryDao {
             statement.execute();
             try (ResultSet resultSet = statement.getResultSet()) {
                 if (resultSet.next()) {
-                    CategoryEntity entity = getCategoryEntity(resultSet);
+                    CategoryEntity entity = CategoryEntityRowMapper.instance.mapRow(resultSet, 1);
                     return Optional.of(entity);
                 } else {
                     return Optional.empty();
@@ -118,7 +115,7 @@ public class CategoryDaoJdbc implements CategoryDao {
             try (ResultSet resultSet = statement.getResultSet()) {
                 List<CategoryEntity> entities = new ArrayList<>();
                 while (resultSet.next()) {
-                    CategoryEntity entity = getCategoryEntity(resultSet);
+                    CategoryEntity entity = CategoryEntityRowMapper.instance.mapRow(resultSet, 1);
                     entities.add(entity);
                 }
                 return entities;
@@ -130,11 +127,16 @@ public class CategoryDaoJdbc implements CategoryDao {
 
     @Override
     public void delete(CategoryEntity category) {
-        try (PreparedStatement statement = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
-                "DELETE FROM category WHERE id = ?"
-        )) {
-            statement.setObject(1, category.getId());
-            statement.executeUpdate();
+        try (PreparedStatement spendStatement = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
+                "DELETE FROM spend WHERE category_id = ?");
+             PreparedStatement userStatement = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
+                     "DELETE FROM category WHERE id = ?")
+        ) {
+            spendStatement.setObject(1, category.getId());
+            spendStatement.executeUpdate();
+
+            userStatement.setObject(1, category.getId());
+            userStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -149,7 +151,7 @@ public class CategoryDaoJdbc implements CategoryDao {
             try (ResultSet resultSet = statement.getResultSet()) {
                 List<CategoryEntity> entities = new ArrayList<>();
                 while (resultSet.next()) {
-                    CategoryEntity entity = getCategoryEntity(resultSet);
+                    CategoryEntity entity = CategoryEntityRowMapper.instance.mapRow(resultSet, 1);
                     entities.add(entity);
                 }
                 return entities;
@@ -157,14 +159,5 @@ public class CategoryDaoJdbc implements CategoryDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private CategoryEntity getCategoryEntity(ResultSet resultSet) throws SQLException {
-        CategoryEntity entity = new CategoryEntity();
-        entity.setId(resultSet.getObject("id", UUID.class));
-        entity.setName(resultSet.getString("name"));
-        entity.setUsername(resultSet.getString("username"));
-        entity.setArchived(resultSet.getBoolean("archived"));
-        return entity;
     }
 }

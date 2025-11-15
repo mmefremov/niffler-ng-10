@@ -1,17 +1,15 @@
 package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.UserdataUserDao;
+import guru.qa.niffler.data.dao.impl.UserdataUserDaoSpringJdbc;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
-import guru.qa.niffler.data.mapper.UserdataUserEntityResultSetExtractor;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,56 +17,30 @@ public class UserdataUserRepositorySpringJdbc implements UserdataUserRepository 
 
     private static final Config CFG = Config.getInstance();
     private static final String URL = CFG.userdataJdbcUrl();
+    private static final UserdataUserDao userDao = new UserdataUserDaoSpringJdbc();
 
     @Override
     public UserEntity create(UserEntity user) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(
-                    """
-                            INSERT INTO "user" (username, currency, firstname, surname, photo, photo_small, full_name)
-                            VALUES ( ?, ?, ?, ?, ?, ?, ?)
-                            """,
-                    Statement.RETURN_GENERATED_KEYS
-            );
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getCurrency().name());
-            statement.setString(3, user.getFirstname());
-            statement.setString(4, user.getSurname());
-            statement.setObject(5, user.getPhoto());
-            statement.setObject(6, user.getPhotoSmall());
-            statement.setString(7, user.getFullname());
-            return statement;
-        }, keyHolder);
-
-        UUID generatedKey = (UUID) keyHolder.getKeys().get("id");
-        user.setId(generatedKey);
-        return user;
+        return userDao.create(user);
     }
 
     @Override
     public Optional<UserEntity> findById(UUID id) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
-        return Optional.ofNullable(template.query(
-                """
-                        SELECT u.*, f.*
-                        FROM "user" u
-                        LEFT JOIN friendship f ON u.id IN (f.addressee_id, f.requester_id)
-                        WHERE u.id = ?
-                        """,
-                UserdataUserEntityResultSetExtractor.instance,
-                id
-        ));
+        return userDao.findById(id);
     }
 
     @Override
-    public void addIncomeInvitation(UserEntity requester, UserEntity addressee) {
-        createFriendshipWithStatus(requester, addressee, FriendshipStatus.PENDING);
+    public Optional<UserEntity> findByUsername(String username) {
+        return userDao.findByUsername(username);
     }
 
     @Override
-    public void addOutcomeInvitation(UserEntity requester, UserEntity addressee) {
+    public UserEntity update(UserEntity user) {
+        return userDao.update(user);
+    }
+
+    @Override
+    public void sendInvitation(UserEntity requester, UserEntity addressee) {
         createFriendshipWithStatus(requester, addressee, FriendshipStatus.PENDING);
     }
 
@@ -76,6 +48,14 @@ public class UserdataUserRepositorySpringJdbc implements UserdataUserRepository 
     public void addFriend(UserEntity requester, UserEntity addressee) {
         createFriendshipWithStatus(requester, addressee, FriendshipStatus.ACCEPTED);
         createFriendshipWithStatus(addressee, requester, FriendshipStatus.ACCEPTED);
+    }
+
+    @Override
+    public void remove(UserEntity user) {
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
+        UUID userId = user.getId();
+        template.update("DELETE FROM friendship WHERE requester_id = ? or addressee_id = ?", userId, userId);
+        template.update("DELETE FROM \"user\" WHERE id = ?", userId);
     }
 
     private void createFriendshipWithStatus(UserEntity requester, UserEntity addressee, FriendshipStatus status) {

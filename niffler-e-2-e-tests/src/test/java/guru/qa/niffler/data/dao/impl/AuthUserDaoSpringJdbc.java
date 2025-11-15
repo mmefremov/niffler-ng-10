@@ -3,6 +3,7 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
+import guru.qa.niffler.data.mapper.AuthUserEntityResultSetExtractor;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class AuthUserDaoSpringJdbc implements AuthUserDao {
@@ -44,6 +46,54 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
         final UUID generatedKey = (UUID) keyHolder.getKeys().get("id");
         user.setId(generatedKey);
         return user;
+    }
+
+    @Override
+    public Optional<AuthUserEntity> findById(UUID id) {
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        return Optional.ofNullable(template.query(
+                """
+                        SELECT
+                            user_id as id,
+                            u.username,
+                            u.password,
+                            u.enabled,
+                            u.account_non_expired,
+                            u.account_non_locked,
+                            u.credentials_non_expired,
+                            a.id as authority_id,
+                            authority
+                        FROM "user" u
+                        JOIN authority a ON u.id = a.user_id
+                        WHERE u.id = ?
+                        """,
+                AuthUserEntityResultSetExtractor.instance,
+                id
+        ));
+    }
+
+    @Override
+    public Optional<AuthUserEntity> findByUsername(String username) {
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        return Optional.ofNullable(template.query(
+                """
+                        SELECT
+                            user_id as id,
+                            u.username,
+                            u.password,
+                            u.enabled,
+                            u.account_non_expired,
+                            u.account_non_locked,
+                            u.credentials_non_expired,
+                            a.id as authority_id,
+                            authority
+                        FROM "user" u
+                        JOIN authority a ON u.id = a.user_id
+                        WHERE u.username = ?
+                        """,
+                AuthUserEntityResultSetExtractor.instance,
+                username
+        ));
     }
 
     @Override
