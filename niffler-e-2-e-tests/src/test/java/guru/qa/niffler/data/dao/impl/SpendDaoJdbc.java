@@ -5,6 +5,7 @@ import guru.qa.niffler.data.dao.SpendDao;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -73,6 +74,34 @@ public class SpendDaoJdbc implements SpendDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public SpendEntity update(SpendEntity spend) {
+        try (PreparedStatement statement = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
+                """
+                        UPDATE spend
+                        SET username = ?,
+                            spend_date = ?,
+                            currency = ?,
+                            amount = ?,
+                            description = ?,
+                            category_id = ?
+                        WHERE id = ?
+                        """)
+        ) {
+            statement.setString(1, spend.getUsername());
+            statement.setDate(2, new Date(spend.getSpendDate().getTime()));
+            statement.setString(3, spend.getCurrency().name());
+            statement.setDouble(4, spend.getAmount());
+            statement.setString(5, spend.getDescription());
+            statement.setObject(6, spend.getCategory().getId());
+            statement.setObject(7, spend.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return spend;
     }
 
     @Override

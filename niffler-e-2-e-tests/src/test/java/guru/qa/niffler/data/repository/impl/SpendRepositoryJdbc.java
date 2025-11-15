@@ -10,7 +10,6 @@ import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.repository.SpendRepository;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,57 +27,25 @@ public class SpendRepositoryJdbc implements SpendRepository {
 
     @Override
     public SpendEntity create(SpendEntity spend) {
+        UUID categoryId = spend.getCategory().getId();
+        if (categoryId == null || categoryDao.findCategoryById(categoryId).isEmpty()) {
+            spend.setCategory(
+                    categoryDao.create(spend.getCategory())
+            );
+        }
         return spendDao.create(spend);
     }
 
     @Override
     public SpendEntity update(SpendEntity spend) {
-        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
-                """
-                        UPDATE spend
-                        SET username = ?,
-                            spend_date = ?,
-                            currency = ?,
-                            amount = ?,
-                            description = ?,
-                            category_id = ?
-                        WHERE id = ?
-                        """)
-        ) {
-            statement.setString(1, spend.getUsername());
-            statement.setDate(2, new Date(spend.getSpendDate().getTime()));
-            statement.setString(3, spend.getCurrency().name());
-            statement.setDouble(4, spend.getAmount());
-            statement.setString(5, spend.getDescription());
-            statement.setObject(6, spend.getCategory().getId());
-            statement.setObject(7, spend.getId());
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        spendDao.update(spend);
+        categoryDao.update(spend.getCategory());
         return spend;
     }
 
     @Override
     public CategoryEntity updateCategory(CategoryEntity category) {
-        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
-                """
-                        UPDATE category
-                        SET name = ?,
-                            username = ?,
-                            archived = ?
-                        WHERE id = ?
-                        """)
-        ) {
-            statement.setString(1, category.getName());
-            statement.setString(2, category.getUsername());
-            statement.setBoolean(3, category.isArchived());
-            statement.setObject(4, category.getId());
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return category;
+        return categoryDao.update(category);
     }
 
     @Override

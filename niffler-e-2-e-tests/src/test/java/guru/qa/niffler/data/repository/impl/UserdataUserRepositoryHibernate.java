@@ -53,6 +53,7 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
 
     @Override
     public void sendInvitation(UserEntity requester, UserEntity addressee) {
+        entityManager.joinTransaction();
         requester.addFriends(FriendshipStatus.PENDING, addressee);
     }
 

@@ -12,8 +12,6 @@ import guru.qa.niffler.data.repository.SpendRepository;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,33 +24,19 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
 
     @Override
     public SpendEntity create(SpendEntity spend) {
+        UUID categoryId = spend.getCategory().getId();
+        if (categoryId == null || categoryDao.findCategoryById(categoryId).isEmpty()) {
+            spend.setCategory(
+                    categoryDao.create(spend.getCategory())
+            );
+        }
         return spendDao.create(spend);
     }
 
     @Override
     public SpendEntity update(SpendEntity spend) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
-        template.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(
-                    """
-                            UPDATE spend
-                            SET username = ?,
-                                spend_date = ?,
-                                currency = ?,
-                                amount = ?,
-                                description = ?,
-                                category_id = ?
-                            WHERE id = ?
-                            """);
-            statement.setString(1, spend.getUsername());
-            statement.setDate(2, new Date(spend.getSpendDate().getTime()));
-            statement.setString(3, spend.getCurrency().name());
-            statement.setDouble(4, spend.getAmount());
-            statement.setString(5, spend.getDescription());
-            statement.setObject(6, spend.getCategory().getId());
-            statement.setObject(7, spend.getId());
-            return statement;
-        });
+        spendDao.update(spend);
+        categoryDao.update(spend.getCategory());
         return spend;
     }
 

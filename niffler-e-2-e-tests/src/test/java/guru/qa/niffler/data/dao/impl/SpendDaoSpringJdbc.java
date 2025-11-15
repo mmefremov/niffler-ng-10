@@ -5,10 +5,12 @@ import guru.qa.niffler.data.dao.SpendDao;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.tpl.DataSources;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -57,6 +59,34 @@ public class SpendDaoSpringJdbc implements SpendDao {
                         SpendEntityRowMapper.instance,
                         id
                 ));
+    }
+
+    @NotNull
+    @Override
+    public SpendEntity update(SpendEntity spend) {
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
+        template.update(connection -> {
+            PreparedStatement statement = connection.prepareStatement(
+                    """
+                            UPDATE spend
+                            SET username = ?,
+                                spend_date = ?,
+                                currency = ?,
+                                amount = ?,
+                                description = ?,
+                                category_id = ?
+                            WHERE id = ?
+                            """);
+            statement.setString(1, spend.getUsername());
+            statement.setDate(2, new Date(spend.getSpendDate().getTime()));
+            statement.setString(3, spend.getCurrency().name());
+            statement.setDouble(4, spend.getAmount());
+            statement.setString(5, spend.getDescription());
+            statement.setObject(6, spend.getCategory().getId());
+            statement.setObject(7, spend.getId());
+            return statement;
+        });
+        return spend;
     }
 
     @Override
