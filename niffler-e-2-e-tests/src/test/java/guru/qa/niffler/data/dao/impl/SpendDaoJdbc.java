@@ -2,11 +2,9 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.SpendDao;
-import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
-import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -66,7 +64,7 @@ public class SpendDaoJdbc implements SpendDao {
             statement.execute();
             try (ResultSet resultSet = statement.getResultSet()) {
                 if (resultSet.next()) {
-                    SpendEntity entity = getSpendEntity(resultSet);
+                    SpendEntity entity = SpendEntityRowMapper.instance.mapRow(resultSet, 1);
                     return Optional.of(entity);
                 } else {
                     return Optional.empty();
@@ -90,7 +88,7 @@ public class SpendDaoJdbc implements SpendDao {
             try (ResultSet resultSet = statement.getResultSet()) {
                 List<SpendEntity> entities = new ArrayList<>();
                 while (resultSet.next()) {
-                    SpendEntity entity = getSpendEntity(resultSet);
+                    SpendEntity entity = SpendEntityRowMapper.instance.mapRow(resultSet, 1);
                     entities.add(entity);
                 }
                 return entities;
@@ -121,7 +119,7 @@ public class SpendDaoJdbc implements SpendDao {
             try (ResultSet resultSet = statement.getResultSet()) {
                 List<SpendEntity> entities = new ArrayList<>();
                 while (resultSet.next()) {
-                    SpendEntity entity = getSpendEntity(resultSet);
+                    SpendEntity entity = SpendEntityRowMapper.instance.mapRow(resultSet, 1);
                     entities.add(entity);
                 }
                 return entities;
@@ -129,22 +127,5 @@ public class SpendDaoJdbc implements SpendDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private SpendEntity getSpendEntity(ResultSet resultSet) throws SQLException {
-        SpendEntity entity = new SpendEntity();
-        entity.setId(resultSet.getObject("id", UUID.class));
-        entity.setUsername(resultSet.getString("username"));
-        entity.setCurrency(CurrencyValues.valueOf(resultSet.getString("currency")));
-        entity.setSpendDate(resultSet.getObject("spend_date", Date.class));
-        entity.setAmount(resultSet.getObject("amount", Double.class));
-        entity.setDescription(resultSet.getString("description"));
-        CategoryEntity categoryEntity = new CategoryEntity();
-        categoryEntity.setId(resultSet.getObject("category_id", UUID.class));
-        categoryEntity.setName(resultSet.getString("name"));
-        categoryEntity.setUsername(resultSet.getString("username"));
-        categoryEntity.setArchived(resultSet.getBoolean("archived"));
-        entity.setCategory(categoryEntity);
-        return entity;
     }
 }
