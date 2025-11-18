@@ -10,5 +10,5 @@ public interface UsersClient {
 
     void addOutcomeInvitation(UserJson targetUser, int count);
 
-    void addFriend(UserJson targetUser, int count);
+    void createFriends(UserJson targetUser, int count);
 }

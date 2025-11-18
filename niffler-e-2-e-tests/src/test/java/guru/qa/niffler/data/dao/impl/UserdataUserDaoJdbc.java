@@ -1,9 +1,9 @@
 package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.UserDao;
+import guru.qa.niffler.data.dao.UserdataUserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
-import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.data.mapper.UserdataUserEntityRowMapper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,13 +16,13 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
-public class UserdataUserDaoJdbc implements UserDao {
+public class UserdataUserDaoJdbc implements UserdataUserDao {
 
     private static final Config CFG = Config.getInstance();
     private static final String URL = CFG.userdataJdbcUrl();
 
     @Override
-    public UserEntity createUser(UserEntity user) {
+    public UserEntity create(UserEntity user) {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "INSERT INTO user (username, currency, firstname, surname, photo, photo_small, full_name) " +
                 "VALUES ( ?, ?, ?, ?, ?, ?, ?)",
@@ -61,7 +61,7 @@ public class UserdataUserDaoJdbc implements UserDao {
             statement.execute();
             try (ResultSet resultSet = statement.getResultSet()) {
                 if (resultSet.next()) {
-                    UserEntity entity = getUserEntity(resultSet);
+                    UserEntity entity = UserdataUserEntityRowMapper.instance.mapRow(resultSet, 1);
                     return Optional.of(entity);
                 } else {
                     return Optional.empty();
@@ -81,24 +81,12 @@ public class UserdataUserDaoJdbc implements UserDao {
             statement.execute();
             try (ResultSet resultSet = statement.getResultSet()) {
                 if (resultSet.next()) {
-                    UserEntity entity = getUserEntity(resultSet);
+                    UserEntity entity = UserdataUserEntityRowMapper.instance.mapRow(resultSet, 1);
                     return Optional.of(entity);
                 } else {
                     return Optional.empty();
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void delete(UserEntity user) {
-        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
-                "DELETE FROM user WHERE id = ?"
-        )) {
-            statement.setObject(1, user.getId());
-            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -113,7 +101,7 @@ public class UserdataUserDaoJdbc implements UserDao {
             try (ResultSet resultSet = statement.getResultSet()) {
                 List<UserEntity> entities = new ArrayList<>();
                 while (resultSet.next()) {
-                    UserEntity entity = getUserEntity(resultSet);
+                    UserEntity entity = UserdataUserEntityRowMapper.instance.mapRow(resultSet, 1);
                     entities.add(entity);
                 }
                 return entities;
@@ -123,16 +111,33 @@ public class UserdataUserDaoJdbc implements UserDao {
         }
     }
 
-    private UserEntity getUserEntity(ResultSet resultSet) throws SQLException {
-        UserEntity entity = new UserEntity();
-        entity.setId(resultSet.getObject("id", UUID.class));
-        entity.setCurrency(CurrencyValues.valueOf(resultSet.getString("currency")));
-        entity.setUsername(resultSet.getString("username"));
-        entity.setFirstname(resultSet.getString("firstname"));
-        entity.setSurname(resultSet.getString("surname"));
-        entity.setPhoto(resultSet.getBytes("photo"));
-        entity.setPhotoSmall(resultSet.getBytes("photo_small"));
-        entity.setFullname(resultSet.getString("full_name"));
-        return entity;
+    @Override
+    public UserEntity update(UserEntity user) {
+        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
+                """
+                        UPDATE "user"
+                        SET username = ?,
+                            currency = ?,
+                            firstname = ?,
+                            surname = ?,
+                            photo = ?,
+                            photo_small = ?,
+                            full_name = ?
+                        WHERE id = ?
+                        """
+        )) {
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getCurrency().name());
+            statement.setString(3, user.getFirstname());
+            statement.setString(4, user.getSurname());
+            statement.setBytes(5, user.getPhoto());
+            statement.setBytes(6, user.getPhotoSmall());
+            statement.setString(7, user.getFullname());
+            statement.setObject(8, user.getId());
+            statement.executeUpdate();
+            return user;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
