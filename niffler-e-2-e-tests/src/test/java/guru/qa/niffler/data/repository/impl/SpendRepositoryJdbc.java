@@ -16,12 +16,12 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.tpl.Connections.holder;
+import static guru.qa.niffler.data.jdbc.Connections.holder;
 
 public class SpendRepositoryJdbc implements SpendRepository {
 
     private static final Config CFG = Config.getInstance();
-    private static final String URL = CFG.spendUrl();
+    private static final String URL = CFG.spendJdbcUrl();
     private static final SpendDao spendDao = new SpendDaoJdbc();
     private static final CategoryDao categoryDao = new CategoryDaoJdbc();
 
@@ -59,7 +59,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
     }
 
     @Override
-    public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(String username, String name) {
+    public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String name) {
         return categoryDao.findCategoryByUsernameAndCategoryName(username, name);
     }
 
@@ -88,11 +88,11 @@ public class SpendRepositoryJdbc implements SpendRepository {
 
     @Override
     public void remove(SpendEntity spend) {
-        spendDao.delete(spend);
+        spendDao.deleteSpend(spend);
     }
 
     @Override
     public void removeCategory(CategoryEntity spend) {
-        categoryDao.delete(spend);
+        categoryDao.deleteCategory(spend);
     }
 }

@@ -7,9 +7,9 @@ import guru.qa.niffler.data.dao.impl.CategoryDaoSpringJdbc;
 import guru.qa.niffler.data.dao.impl.SpendDaoSpringJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
-import guru.qa.niffler.data.mapper.SpendEntityResultSetExtractor;
+import guru.qa.niffler.data.extractor.SpendEntityExtractor;
+import guru.qa.niffler.data.jdbc.DataSources;
 import guru.qa.niffler.data.repository.SpendRepository;
-import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Optional;
@@ -18,7 +18,7 @@ import java.util.UUID;
 public class SpendRepositorySpringJdbc implements SpendRepository {
 
     private static final Config CFG = Config.getInstance();
-    private static final String URL = CFG.spendUrl();
+    private static final String URL = CFG.spendJdbcUrl();
     private static final SpendDao spendDao = new SpendDaoSpringJdbc();
     private static final CategoryDao categoryDao = new CategoryDaoSpringJdbc();
 
@@ -56,7 +56,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
     }
 
     @Override
-    public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(String username, String name) {
+    public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String name) {
         return categoryDao.findCategoryByUsernameAndCategoryName(username, name);
     }
 
@@ -70,7 +70,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         return Optional.ofNullable(template.query(
                 "SELECT * FROM spend WHERE username = ? AND description = ?",
-                SpendEntityResultSetExtractor.instance,
+                SpendEntityExtractor.instance,
                 username,
                 description)
         );
@@ -78,11 +78,11 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
 
     @Override
     public void remove(SpendEntity spend) {
-        spendDao.delete(spend);
+        spendDao.deleteSpend(spend);
     }
 
     @Override
     public void removeCategory(CategoryEntity spend) {
-        categoryDao.delete(spend);
+        categoryDao.deleteCategory(spend);
     }
 }

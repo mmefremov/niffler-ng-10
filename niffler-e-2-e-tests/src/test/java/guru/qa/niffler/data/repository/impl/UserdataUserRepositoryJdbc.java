@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.tpl.Connections.holder;
+import static guru.qa.niffler.data.jdbc.Connections.holder;
 
 public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
 
@@ -41,14 +41,17 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     }
 
     @Override
-    public void sendInvitation(UserEntity requester, UserEntity addressee) {
-        createFriendshipWithStatus(requester, addressee, FriendshipStatus.PENDING);
+    public void addFriendshipRequest(UserEntity requester, UserEntity addressee) {
+        requester.addFriends(FriendshipStatus.PENDING, addressee);
+        userDao.update(requester);
     }
 
     @Override
     public void addFriend(UserEntity requester, UserEntity addressee) {
-        createFriendshipWithStatus(requester, addressee, FriendshipStatus.ACCEPTED);
-        createFriendshipWithStatus(addressee, requester, FriendshipStatus.ACCEPTED);
+        requester.addFriends(FriendshipStatus.ACCEPTED, addressee);
+        addressee.addFriends(FriendshipStatus.ACCEPTED, requester);
+        userDao.update(requester);
+        userDao.update(addressee);
     }
 
     @Override
@@ -70,22 +73,6 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
             friendshipPs.executeUpdate();
             userPs.setObject(1, userId);
             userPs.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void createFriendshipWithStatus(UserEntity requester, UserEntity addressee, FriendshipStatus status) {
-        try (PreparedStatement statement = holder(URL).connection().prepareStatement(
-                """
-                        INSERT INTO friendship (requester_id, addressee_id, status)
-                        VALUES (?, ?, ?)
-                        """
-        )) {
-            statement.setObject(1, requester.getId());
-            statement.setObject(2, addressee.getId());
-            statement.setString(3, status.name());
-            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

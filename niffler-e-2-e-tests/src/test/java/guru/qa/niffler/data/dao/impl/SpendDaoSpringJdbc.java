@@ -3,8 +3,8 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.SpendDao;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
+import guru.qa.niffler.data.jdbc.DataSources;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
-import guru.qa.niffler.data.tpl.DataSources;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,7 +20,7 @@ import java.util.UUID;
 public class SpendDaoSpringJdbc implements SpendDao {
 
     private static final Config CFG = Config.getInstance();
-    private static final String URL = CFG.spendUrl();
+    private static final String URL = CFG.spendJdbcUrl();
 
     @Override
     public SpendEntity create(SpendEntity spend) {
@@ -104,7 +104,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     }
 
     @Override
-    public void delete(SpendEntity spend) {
+    public void deleteSpend(SpendEntity spend) {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         template.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(

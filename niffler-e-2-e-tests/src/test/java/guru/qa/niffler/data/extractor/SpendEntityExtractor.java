@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.mapper;
+package guru.qa.niffler.data.extractor;
 
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SpendEntityResultSetExtractor implements ResultSetExtractor<SpendEntity> {
+public class SpendEntityExtractor implements ResultSetExtractor<SpendEntity> {
 
-    public static final SpendEntityResultSetExtractor instance = new SpendEntityResultSetExtractor();
+    public static final SpendEntityExtractor instance = new SpendEntityExtractor();
 
-    private SpendEntityResultSetExtractor() {
+    private SpendEntityExtractor() {
     }
 
     @Override

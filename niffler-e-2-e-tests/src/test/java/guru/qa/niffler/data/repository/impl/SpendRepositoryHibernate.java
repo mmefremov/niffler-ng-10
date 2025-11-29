@@ -16,7 +16,7 @@ public class SpendRepositoryHibernate implements SpendRepository {
 
     private static final Config CFG = Config.getInstance();
 
-    private final EntityManager entityManager = em(CFG.spendUrl());
+    private final EntityManager entityManager = em(CFG.spendJdbcUrl());
 
     @Override
     public SpendEntity create(SpendEntity spend) {
@@ -54,7 +54,7 @@ public class SpendRepositoryHibernate implements SpendRepository {
     }
 
     @Override
-    public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(String username, String name) {
+    public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String name) {
         try {
             return Optional.of(
                     entityManager.createQuery(

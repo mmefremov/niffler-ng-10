@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.mapper;
+package guru.qa.niffler.data.extractor;
 
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
@@ -12,11 +12,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AuthUserEntityResultSetExtractor implements ResultSetExtractor<AuthUserEntity> {
+public class AuthUserEntityExtractor implements ResultSetExtractor<AuthUserEntity> {
 
-    public static final AuthUserEntityResultSetExtractor instance = new AuthUserEntityResultSetExtractor();
+    public static final AuthUserEntityExtractor instance = new AuthUserEntityExtractor();
 
-    private AuthUserEntityResultSetExtractor() {
+    private AuthUserEntityExtractor() {
     }
 
     @Override

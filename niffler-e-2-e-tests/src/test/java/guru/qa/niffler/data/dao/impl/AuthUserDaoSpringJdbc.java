@@ -3,9 +3,9 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
-import guru.qa.niffler.data.mapper.AuthUserEntityResultSetExtractor;
+import guru.qa.niffler.data.extractor.AuthUserEntityExtractor;
+import guru.qa.niffler.data.jdbc.DataSources;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
-import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,12 +21,13 @@ import java.util.UUID;
 public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
     private static final Config CFG = Config.getInstance();
+    private static final String URL = CFG.authJdbcUrl();
 
     private static final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(
@@ -50,7 +51,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
     @Override
     public Optional<AuthUserEntity> findById(UUID id) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         return Optional.ofNullable(template.query(
                 """
                         SELECT
@@ -67,14 +68,14 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
                         JOIN authority a ON u.id = a.user_id
                         WHERE u.id = ?
                         """,
-                AuthUserEntityResultSetExtractor.instance,
+                AuthUserEntityExtractor.instance,
                 id
         ));
     }
 
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         return Optional.ofNullable(template.query(
                 """
                         SELECT
@@ -91,16 +92,16 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
                         JOIN authority a ON u.id = a.user_id
                         WHERE u.username = ?
                         """,
-                AuthUserEntityResultSetExtractor.instance,
+                AuthUserEntityExtractor.instance,
                 username
         ));
     }
 
     @Override
     public List<AuthUserEntity> findAll() {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         return template.query(
-                "SELECT * FROM user",
+                "SELECT * FROM \"user\"",
                 AuthUserEntityRowMapper.instance
         );
     }

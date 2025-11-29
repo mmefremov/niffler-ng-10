@@ -3,14 +3,16 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UserdataUserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
-import guru.qa.niffler.data.mapper.UserdataUserEntityResultSetExtractor;
+import guru.qa.niffler.data.extractor.UserdataUserEntityExtractor;
+import guru.qa.niffler.data.jdbc.DataSources;
 import guru.qa.niffler.data.mapper.UserdataUserEntityRowMapper;
-import guru.qa.niffler.data.tpl.DataSources;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
@@ -19,10 +21,11 @@ import java.util.UUID;
 public class UserdataUserDaoSpringJdbc implements UserdataUserDao {
 
     private static final Config CFG = Config.getInstance();
+    private static final String URL = CFG.userdataJdbcUrl();
 
     @Override
     public UserEntity create(UserEntity user) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(
@@ -47,7 +50,7 @@ public class UserdataUserDaoSpringJdbc implements UserdataUserDao {
 
     @Override
     public Optional<UserEntity> findById(UUID id) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         return Optional.ofNullable(template.query(
                 """
                         SELECT u.*, f.*
@@ -55,14 +58,14 @@ public class UserdataUserDaoSpringJdbc implements UserdataUserDao {
                         LEFT JOIN friendship f ON u.id IN (f.addressee_id, f.requester_id)
                         WHERE u.id = ?
                         """,
-                UserdataUserEntityResultSetExtractor.instance,
+                UserdataUserEntityExtractor.instance,
                 id
         ));
     }
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         return Optional.ofNullable(template.query(
                 """
                         SELECT u.*, f.*
@@ -70,47 +73,58 @@ public class UserdataUserDaoSpringJdbc implements UserdataUserDao {
                         LEFT JOIN friendship f ON u.id IN (f.addressee_id, f.requester_id)
                         WHERE u.username = ?
                         """,
-                UserdataUserEntityResultSetExtractor.instance,
+                UserdataUserEntityExtractor.instance,
                 username
         ));
     }
 
     @Override
     public List<UserEntity> findAll() {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         return template.query(
-                "SELECT * FROM user",
+                "SELECT * FROM \"user\"",
                 UserdataUserEntityRowMapper.instance
         );
     }
 
     @Override
     public UserEntity update(UserEntity user) {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-        template.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(
-                    """
-                            UPDATE "user"
-                            SET username = ?,
-                                currency = ?,
-                                firstname = ?,
-                                surname = ?,
-                                photo = ?,
-                                photo_small = ?,
-                                full_name = ?
-                            WHERE id = ?
-                            """
-            );
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getCurrency().name());
-            statement.setString(3, user.getFirstname());
-            statement.setString(4, user.getSurname());
-            statement.setBytes(5, user.getPhoto());
-            statement.setBytes(6, user.getPhotoSmall());
-            statement.setString(7, user.getFullname());
-            statement.setObject(8, user.getId());
-            return statement;
-        });
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
+        template.update("""
+                                UPDATE "user"
+                                SET username = ?,
+                                    currency = ?,
+                                    firstname = ?,
+                                    surname = ?,
+                                    photo = ?,
+                                    photo_small = ?,
+                                    full_name = ?
+                                WHERE id = ?
+                                """,
+                        user.getCurrency().name(),
+                        user.getFirstname(),
+                        user.getSurname(),
+                        user.getPhoto(),
+                        user.getPhotoSmall(),
+                        user.getId());
+        template.batchUpdate("""
+                                     INSERT INTO friendship (requester_id, addressee_id, status) VALUES (?, ?, ?)
+                                     ON CONFLICT (requester_id, addressee_id) DO UPDATE SET status = ?
+                                     """,
+                             new BatchPreparedStatementSetter() {
+                                 @Override
+                                 public void setValues(PreparedStatement ps, int i) throws SQLException {
+                                     ps.setObject(1, user.getId());
+                                     ps.setObject(2, user.getFriendshipRequests().get(i).getAddressee().getId());
+                                     ps.setString(3, user.getFriendshipRequests().get(i).getStatus().name());
+                                     ps.setString(4, user.getFriendshipRequests().get(i).getStatus().name());
+                                 }
+
+                                 @Override
+                                 public int getBatchSize() {
+                                     return user.getFriendshipRequests().size();
+                                 }
+                             });
         return user;
     }
 }

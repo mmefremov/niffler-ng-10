@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.mapper;
+package guru.qa.niffler.data.extractor;
 
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import org.springframework.dao.DataAccessException;
@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class CategoryEntityResultSetExtractor implements ResultSetExtractor<CategoryEntity> {
+public class CategoryEntityExtractor implements ResultSetExtractor<CategoryEntity> {
 
-    public static final CategoryEntityResultSetExtractor instance = new CategoryEntityResultSetExtractor();
+    public static final CategoryEntityExtractor instance = new CategoryEntityExtractor();
 
-    private CategoryEntityResultSetExtractor() {
+    private CategoryEntityExtractor() {
     }
 
     @Override

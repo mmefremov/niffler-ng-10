@@ -1,11 +1,14 @@
 package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.dao.AuthUserDao;
+import guru.qa.niffler.data.dao.impl.AuthAuthorityDaoSpringJdbc;
 import guru.qa.niffler.data.dao.impl.AuthUserDaoSpringJdbc;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
+import guru.qa.niffler.data.entity.auth.AuthorityEntity;
+import guru.qa.niffler.data.jdbc.DataSources;
 import guru.qa.niffler.data.repository.AuthUserRepository;
-import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,10 +23,13 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     private static final String URL = CFG.authJdbcUrl();
     private static final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     private static final AuthUserDao authUserDao = new AuthUserDaoSpringJdbc();
+    private final AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoSpringJdbc();
 
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
-        return authUserDao.create(user);
+        authUserDao.create(user);
+        authAuthorityDao.create(user.getAuthorities().toArray(new AuthorityEntity[0]));
+        return user;
     }
 
     @Override

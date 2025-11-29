@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.mapper;
+package guru.qa.niffler.data.extractor;
 
 import guru.qa.niffler.data.entity.userdata.FriendshipEntity;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class UserdataUserEntityResultSetExtractor implements ResultSetExtractor<UserEntity> {
+public class UserdataUserEntityExtractor implements ResultSetExtractor<UserEntity> {
 
-    public static final UserdataUserEntityResultSetExtractor instance = new UserdataUserEntityResultSetExtractor();
+    public static final UserdataUserEntityExtractor instance = new UserdataUserEntityExtractor();
 
-    private UserdataUserEntityResultSetExtractor() {
+    private UserdataUserEntityExtractor() {
     }
 
     @Override

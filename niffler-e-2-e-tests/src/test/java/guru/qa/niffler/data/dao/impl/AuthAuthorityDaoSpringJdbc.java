@@ -2,15 +2,13 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
-import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.tpl.DataSources;
+import guru.qa.niffler.data.jdbc.DataSources;
+import guru.qa.niffler.data.mapper.AuthorityEntityRowMapper;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +16,7 @@ import java.util.UUID;
 public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
     private static final Config CFG = Config.getInstance();
+    private static final String URL = CFG.authJdbcUrl();
 
     @Override
     public void create(AuthorityEntity... authority) {
@@ -41,19 +40,20 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
     @Override
     public List<AuthorityEntity> findAll() {
-        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
         return template.query(
                 "SELECT * FROM authority",
-                new RowMapper<AuthorityEntity>() {
-                    @Override
-                    public AuthorityEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        AuthorityEntity entity = new AuthorityEntity();
-                        entity.setId(rs.getObject("id", UUID.class));
-                        // entity.setUserId(rs.getObject("user_id", UUID.class));
-                        entity.setAuthority(Authority.valueOf(rs.getString("authority")));
-                        return entity;
-                    }
-                }
+                AuthorityEntityRowMapper.instance
+        );
+    }
+
+    @Override
+    public List<AuthorityEntity> findAllByUserId(UUID userId) {
+        JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
+        return template.query(
+                "SELECT * FROM authority where user_id = ?",
+                AuthorityEntityRowMapper.instance,
+                userId
         );
     }
 }
