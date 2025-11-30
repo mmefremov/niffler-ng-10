@@ -6,6 +6,8 @@ import guru.qa.niffler.data.dao.impl.AuthUserDaoJdbc;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -13,17 +15,20 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.jdbc.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
     private static final Config CFG = Config.getInstance();
     private static final String URL = CFG.authJdbcUrl();
     private static final AuthUserDao authUserDao = new AuthUserDaoJdbc();
 
+    @Nonnull
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
         return authUserDao.create(user);
     }
 
+    @Nonnull
     @Override
     public AuthUserEntity update(AuthUserEntity user) {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
@@ -52,11 +57,13 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
         }
     }
 
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         return authUserDao.findById(id);
     }
 
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
         return authUserDao.findByUsername(username);

@@ -5,6 +5,7 @@ import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthorityEntityRowMapper;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +22,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     private static final String URL = CFG.authJdbcUrl();
 
     @Override
+    @SuppressWarnings("resource")
     public void create(AuthorityEntity... authorities) {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "INSERT INTO authority (user_id, authority) VALUES (?, ?)",
@@ -38,7 +40,9 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         }
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public List<AuthorityEntity> findAll() {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "SELECT * FROM authority"
@@ -56,7 +60,9 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         }
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public List<AuthorityEntity> findAllByUserId(UUID userId) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 "SELECT * FROM authority where user_id = ?")) {

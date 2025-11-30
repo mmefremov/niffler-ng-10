@@ -7,6 +7,7 @@ import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,7 +26,9 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
     private static final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public AuthUserEntity create(AuthUserEntity user) {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "INSERT INTO user (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) " +
@@ -55,7 +58,9 @@ public class AuthUserDaoJdbc implements AuthUserDao {
         }
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public Optional<AuthUserEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 "select * from \"user\" u join authority a on u.id = a.user_id where u.id = ?"
@@ -78,7 +83,9 @@ public class AuthUserDaoJdbc implements AuthUserDao {
         }
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public Optional<AuthUserEntity> findByUsername(String username) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 "select * from \"user\" u join authority a on u.id = a.user_id where u.username = ?"
@@ -101,7 +108,9 @@ public class AuthUserDaoJdbc implements AuthUserDao {
         }
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public List<AuthUserEntity> findAll() {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "SELECT * FROM \"user\""

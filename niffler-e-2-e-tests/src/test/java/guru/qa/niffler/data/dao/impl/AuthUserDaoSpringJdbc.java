@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -25,6 +26,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
     private static final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
+    @Nonnull
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
@@ -49,6 +51,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
         return user;
     }
 
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
@@ -73,6 +76,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
         ));
     }
 
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
@@ -97,6 +101,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
         ));
     }
 
+    @Nonnull
     @Override
     public List<AuthUserEntity> findAll() {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));

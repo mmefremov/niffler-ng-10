@@ -4,12 +4,14 @@ import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@ParametersAreNonnullByDefault
 public class CategoryEntityExtractor implements ResultSetExtractor<CategoryEntity> {
 
     public static final CategoryEntityExtractor instance = new CategoryEntityExtractor();

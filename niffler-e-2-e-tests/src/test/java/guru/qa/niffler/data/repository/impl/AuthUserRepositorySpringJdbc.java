@@ -13,10 +13,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
     private static final Config CFG = Config.getInstance();
@@ -25,6 +28,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     private static final AuthUserDao authUserDao = new AuthUserDaoSpringJdbc();
     private final AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoSpringJdbc();
 
+    @Nonnull
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
         authUserDao.create(user);
@@ -32,6 +36,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
         return user;
     }
 
+    @Nonnull
     @Override
     public AuthUserEntity update(AuthUserEntity user) {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
@@ -61,11 +66,13 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
         return user;
     }
 
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         return authUserDao.findById(id);
     }
 
+    @Nonnull
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
         return authUserDao.findByUsername(username);

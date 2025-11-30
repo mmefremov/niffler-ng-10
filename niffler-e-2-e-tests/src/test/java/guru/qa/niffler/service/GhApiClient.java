@@ -7,8 +7,12 @@ import lombok.SneakyThrows;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static java.util.Objects.requireNonNull;
 
+@ParametersAreNonnullByDefault
 public class GhApiClient {
 
     private static final Config CFG = Config.getInstance();
@@ -22,6 +26,7 @@ public class GhApiClient {
     private final GhApi ghApi = retrofit.create(GhApi.class);
 
     @SneakyThrows
+    @Nonnull
     public String issueState(String issueNumber) {
         JsonNode responseBody = ghApi.issue(
                 "Bearer " + System.getenv(GH_TOKEN_ENV),

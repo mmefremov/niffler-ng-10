@@ -8,6 +8,7 @@ import guru.qa.niffler.data.mapper.AuthorityEntityRowMapper;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -38,6 +39,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
         );
     }
 
+    @Nonnull
     @Override
     public List<AuthorityEntity> findAll() {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
@@ -47,6 +49,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
         );
     }
 
+    @Nonnull
     @Override
     public List<AuthorityEntity> findAllByUserId(UUID userId) {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));

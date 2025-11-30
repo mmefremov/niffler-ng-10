@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -17,11 +18,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Objects.requireNonNull;
+
 public class SpendDaoSpringJdbc implements SpendDao {
 
     private static final Config CFG = Config.getInstance();
     private static final String URL = CFG.spendJdbcUrl();
 
+    @Nonnull
     @Override
     public SpendEntity create(SpendEntity spend) {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
@@ -46,6 +50,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
         return spend;
     }
 
+    @Nonnull
     @Override
     public Optional<SpendEntity> findSpendById(UUID id) {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
@@ -89,10 +94,11 @@ public class SpendDaoSpringJdbc implements SpendDao {
         return spend;
     }
 
+    @Nonnull
     @Override
     public List<SpendEntity> findAllByUsername(String username) {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
-        return template.query(
+        return requireNonNull(template.query(
                 """
                         SELECT * FROM spend
                         JOIN category ON spend.category_id = category.id
@@ -100,7 +106,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
                         """,
                 SpendEntityRowMapper.instance,
                 username
-        );
+        ));
     }
 
     @Override
@@ -114,12 +120,13 @@ public class SpendDaoSpringJdbc implements SpendDao {
         });
     }
 
+    @Nonnull
     @Override
     public List<SpendEntity> findAll() {
         JdbcTemplate template = new JdbcTemplate(DataSources.dataSource(URL));
-        return template.query(
+        return requireNonNull(template.query(
                 "SELECT * FROM spend",
                 SpendEntityRowMapper.instance
-        );
+        ));
     }
 }

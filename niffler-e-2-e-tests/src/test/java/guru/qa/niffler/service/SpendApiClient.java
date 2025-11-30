@@ -10,12 +10,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ParametersAreNonnullByDefault
 public class SpendApiClient implements SpendClient {
 
     private static final Config CFG = Config.getInstance();
@@ -27,6 +32,7 @@ public class SpendApiClient implements SpendClient {
 
     private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
+    @Nonnull
     @Override
     public SpendJson createSpend(SpendJson spend) {
         final Response<SpendJson> response;
@@ -37,9 +43,10 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertThat(response.code()).isEqualTo(HttpStatus.CREATED_201);
-        return response.body();
+        return requireNonNull(response.body());
     }
 
+    @Nonnull
     public SpendJson editSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
@@ -49,9 +56,10 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-        return response.body();
+        return requireNonNull(response.body());
     }
 
+    @Nonnull
     public SpendJson getSpend(String id) {
         final Response<SpendJson> response;
         try {
@@ -61,19 +69,25 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-        return response.body();
+        return requireNonNull(response.body());
     }
 
-    public List<SpendJson> allSpends(String username, CurrencyValues filterCurrency, Date from, Date to) {
+    @Nonnull
+    public List<SpendJson> allSpends(String username,
+                                     @Nullable CurrencyValues currency,
+                                     @Nullable String from,
+                                     @Nullable String to) {
         final Response<List<SpendJson>> response;
         try {
-            response = spendApi.allSpends(username, filterCurrency, from, to)
+            response = spendApi.allSpends(username, currency, from, to)
                     .execute();
         } catch (IOException e) {
             throw new AssertionError(e);
         }
         assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-        return response.body();
+        return response.body() != null
+                ? response.body()
+                : Collections.emptyList();
     }
 
     public void removeSpends(String username, List<String> ids) {
@@ -87,6 +101,7 @@ public class SpendApiClient implements SpendClient {
         assertThat(response.code()).isEqualTo(HttpStatus.ACCEPTED_202);
     }
 
+    @Nonnull
     @Override
     public CategoryJson createCategory(CategoryJson category) {
         final Response<CategoryJson> response;
@@ -97,9 +112,10 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-        return response.body();
+        return requireNonNull(response.body());
     }
 
+    @Nonnull
     @Override
     public CategoryJson updateCategory(CategoryJson category) {
         final Response<CategoryJson> response;
@@ -110,9 +126,10 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-        return response.body();
+        return requireNonNull(response.body());
     }
 
+    @Nonnull
     public List<CategoryJson> allCategories(String username) {
         final Response<List<CategoryJson>> response;
         try {
@@ -122,6 +139,8 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
-        return response.body();
+        return response.body() != null
+                ? response.body()
+                : Collections.emptyList();
     }
 }

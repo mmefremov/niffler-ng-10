@@ -8,10 +8,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
+@ParametersAreNonnullByDefault
 public class AuthApiClient {
 
     private static final Config CFG = Config.getInstance();

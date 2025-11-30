@@ -6,6 +6,7 @@ import guru.qa.niffler.data.entity.userdata.FriendshipEntity;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.mapper.UserdataUserEntityRowMapper;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +23,9 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     private static final Config CFG = Config.getInstance();
     private static final String URL = CFG.userdataJdbcUrl();
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public UserEntity create(UserEntity user) {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "INSERT INTO user (username, currency, firstname, surname, photo, photo_small, full_name) " +
@@ -53,7 +56,9 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
         }
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public Optional<UserEntity> findById(UUID id) {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "SELECT * FROM \"user\" WHERE id = ?"
@@ -63,7 +68,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
             try (ResultSet resultSet = statement.getResultSet()) {
                 if (resultSet.next()) {
                     UserEntity entity = UserdataUserEntityRowMapper.instance.mapRow(resultSet, 1);
-                    return Optional.of(entity);
+                    return Optional.ofNullable(entity);
                 } else {
                     return Optional.empty();
                 }
@@ -73,7 +78,9 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
         }
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public Optional<UserEntity> findByUsername(String username) {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "SELECT * FROM \"user\" WHERE username = ?"
@@ -83,7 +90,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
             try (ResultSet resultSet = statement.getResultSet()) {
                 if (resultSet.next()) {
                     UserEntity entity = UserdataUserEntityRowMapper.instance.mapRow(resultSet, 1);
-                    return Optional.of(entity);
+                    return Optional.ofNullable(entity);
                 } else {
                     return Optional.empty();
                 }
@@ -93,7 +100,9 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
         }
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public List<UserEntity> findAll() {
         try (PreparedStatement statement = holder(URL).connection().prepareStatement(
                 "SELECT * FROM \"user\""
@@ -112,7 +121,9 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
         }
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("resource")
     public UserEntity update(UserEntity user) {
         try (PreparedStatement userStatement = holder(URL).connection().prepareStatement(
                 """

@@ -11,13 +11,16 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ParametersAreNonnullByDefault
 public class UsersApiClient implements UsersClient {
 
     private static final Config CFG = Config.getInstance();
@@ -30,6 +33,7 @@ public class UsersApiClient implements UsersClient {
     private final UsersApi usersApi = retrofit.create(UsersApi.class);
     private final AuthApiClient authApiClient = new AuthApiClient();
 
+    @Nonnull
     @Override
     public UserJson createUser(String username, String password) {
         Response<UserJson> response;
@@ -41,9 +45,10 @@ public class UsersApiClient implements UsersClient {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-        return response.body();
+        return requireNonNull(response.body());
     }
 
+    @Nonnull
     @Override
     public List<UserJson> addIncomeInvitation(UserJson targetUser, int count) {
         for (int i = 0; i < count; i++) {
@@ -62,11 +67,12 @@ public class UsersApiClient implements UsersClient {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-        return response.body().stream()
+        return requireNonNull(response.body()).stream()
                 .filter(user -> user.friendshipStatus() == FriendshipStatus.INVITE_RECEIVED)
-                .collect(Collectors.toList());
+                .toList();
     }
 
+    @Nonnull
     @Override
     public List<UserJson> addOutcomeInvitation(UserJson targetUser, int count) {
         List<UserJson> invitations = new ArrayList<>();
@@ -83,6 +89,7 @@ public class UsersApiClient implements UsersClient {
         return invitations;
     }
 
+    @Nonnull
     @Override
     public List<UserJson> addFriend(UserJson targetUser, int count) {
         List<UserJson> friends = new ArrayList<>();
