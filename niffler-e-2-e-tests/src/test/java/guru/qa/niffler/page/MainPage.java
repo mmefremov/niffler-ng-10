@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -13,6 +14,7 @@ public class MainPage {
     private final SelenideElement profileLink = $x("//*[@href='/profile']/parent::li");
     private final SelenideElement friendsLink = $x("//*[@href='/people/friends']/parent::li");
     private final SelenideElement statistics = $("#stat");
+    private final SelenideElement searchInput = $("input[aria-label='search']");
     private final SelenideElement spendingTable = $("#spendings");
 
     public MainPage checkThatPageLoaded() {
@@ -37,6 +39,7 @@ public class MainPage {
     }
 
     public EditSpendingPage editSpending(String description) {
+        searchInput.setValue(description).sendKeys(Keys.ENTER);
         spendingTable.$$("tbody tr").find(text(description)).$$("td").get(5).click();
         return new EditSpendingPage();
     }

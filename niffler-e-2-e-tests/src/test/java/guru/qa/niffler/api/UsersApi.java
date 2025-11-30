@@ -10,17 +10,17 @@ import java.util.List;
 
 public interface UsersApi {
 
-    @GET("/internal/users/current")
+    @GET("internal/users/current")
     Call<UserJson> currentUser(@Query("username") String username);
 
-    @POST("/internal/invitations/send")
+    @POST("internal/invitations/send")
     Call<UserJson> sendInvitation(@Query("username") String username,
                                   @Query("targetUsername") String targetUsername);
 
-    @POST("/internal/invitations/accept")
+    @POST("internal/invitations/accept")
     Call<UserJson> acceptInvitation(@Query("username") String username,
                                     @Query("targetUsername") String targetUsername);
 
-    @GET("/internal/friends/all")
+    @GET("internal/friends/all")
     Call<List<UserJson>> friends(@Query("username") String username);
 }
