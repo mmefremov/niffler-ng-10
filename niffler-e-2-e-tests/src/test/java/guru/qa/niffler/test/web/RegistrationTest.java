@@ -2,18 +2,14 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.service.AuthApiClient;
-import guru.qa.niffler.util.RandomDataUtils;
-import org.eclipse.jetty.http.HttpStatus;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(BrowserExtension.class)
 class RegistrationTest {
@@ -37,21 +33,17 @@ class RegistrationTest {
                 .checkThatPageLoaded();
     }
 
+    @User
     @Test
     @DisplayName("Ошибка при попытке регистрации существующего пользователя")
-    void shouldNotRegisterUserWithExistingUsername() throws IOException {
-        String username = RandomDataUtils.randomUsername();
-        String password = RandomDataUtils.randomPassword();
-        var response = new AuthApiClient().register(username, password);
-        assertThat(response.code()).isEqualTo(HttpStatus.CREATED_201);
-
+    void shouldNotRegisterUserWithExistingUsername(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .register()
-                .setUsername(username)
-                .setPassword(password)
-                .setPasswordSubmit(password)
+                .setUsername(user.username())
+                .setPassword(user.testData().password())
+                .setPasswordSubmit(user.testData().password())
                 .signUp()
-                .checkFormErrorText("Username `%s` already exists".formatted(username));
+                .checkFormErrorText("Username `%s` already exists".formatted(user.username()));
     }
 
     @Test

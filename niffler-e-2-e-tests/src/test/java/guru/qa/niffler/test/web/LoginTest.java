@@ -2,49 +2,36 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.service.AuthApiClient;
-import guru.qa.niffler.util.RandomDataUtils;
-import org.eclipse.jetty.http.HttpStatus;
-import org.junit.jupiter.api.BeforeAll;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @WebTest
 class LoginTest {
 
     private static final Config CFG = Config.getInstance();
-    private static String registeredUsername;
-    private static String registeredPassword;
 
-    @BeforeAll
-    static void setup() throws IOException {
-        registeredUsername = RandomDataUtils.randomUsername();
-        registeredPassword = RandomDataUtils.randomPassword();
-        var response = new AuthApiClient().register(registeredUsername, registeredPassword);
-        assertThat(response.code()).isEqualTo(HttpStatus.CREATED_201);
-    }
-
+    @User
     @Test
     @DisplayName("Успешный вход пользователя")
-    void mainPageShouldBeDisplayedAfterSuccessLogin() {
+    void mainPageShouldBeDisplayedAfterSuccessLogin(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(registeredUsername, registeredPassword)
+                .login(user.username(), user.testData().password())
                 .checkThatPageLoaded();
     }
 
+    @User
     @Test
     @DisplayName("Пользователь остается на странице входа при вводе неверных данных")
-    void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
+    void userShouldStayOnLoginPageAfterLoginWithBadCredentials(UserJson user) {
         String wrongPassword = RandomDataUtils.randomPassword();
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .tryToLogin(registeredUsername, wrongPassword)
+                .tryToLogin(user.username(), wrongPassword)
                 .checkFormErrorText("Bad credentials");
     }
 }

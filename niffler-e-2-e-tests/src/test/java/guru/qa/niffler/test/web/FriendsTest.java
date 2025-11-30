@@ -2,63 +2,68 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.extension.UsersQueueExtension;
-import guru.qa.niffler.jupiter.extension.UsersQueueExtension.StaticUser;
-import guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.EMPTY;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.WITH_FRIEND;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.WITH_INCOME_REQUEST;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.WITH_OUTCOME_REQUEST;
 
 @ExtendWith({BrowserExtension.class, UsersQueueExtension.class})
 class FriendsTest {
 
     private static final Config CFG = Config.getInstance();
 
+    @User(
+            friends = 1
+    )
     @Test
     @DisplayName("Таблица друзей содержит друга")
-    void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIEND) StaticUser user) {
+    void friendShouldBePresentInFriendsTable(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
+                .login(user.username(), user.testData().password())
                 .openProfileMenu()
                 .openFriends()
-                .friendsTableShouldContainFriend(user.friend());
+                .friendsTableShouldContainFriend(user.testData().friends().getFirst().username());
     }
 
+    @User
     @Test
     @DisplayName("Таблица друзей пустая")
-    void friendsTableShouldBeEmptyForNewUser(@UserType(EMPTY) StaticUser user) {
+    void friendsTableShouldBeEmptyForNewUser(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
+                .login(user.username(), user.testData().password())
                 .openProfileMenu()
                 .openFriends()
                 .friendsTableShouldBeEmpty();
     }
 
+    @User(
+            incomeInvitations = 1
+    )
     @Test
     @DisplayName("Таблица друзей содержит входящий запрос")
-    void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) StaticUser user) {
+    void incomeInvitationBePresentInFriendsTable(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
+                .login(user.username(), user.testData().password())
                 .openProfileMenu()
                 .openFriends()
-                .requestsTableShouldContainIncomeFriend(user.income());
+                .requestsTableShouldContainIncomeFriend(user.testData().incomeInvitations().getFirst().username());
     }
 
+    @User(
+            outcomeInvitations = 1
+    )
     @Test
     @DisplayName("Список всех людей содержит исходящий запрос")
-    void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) StaticUser user) {
+    void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
+                .login(user.username(), user.testData().password())
                 .openProfileMenu()
                 .openFriends()
                 .openPeopleTab()
-                .allPeoplesTableShouldContainWaitingAnswerFromFriend(user.outcome());
+                .allPeoplesTableShouldContainWaitingAnswerFromFriend(user.testData().outcomeInvitations().getFirst().username());
     }
 }

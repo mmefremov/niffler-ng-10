@@ -5,7 +5,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
-import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,40 +14,36 @@ import org.junit.jupiter.api.Test;
 class ProfileTest {
 
     private static final Config CFG = Config.getInstance();
-    private static final String REGISTERED_USERNAME = "duck";
-    private static final String REGISTERED_PASSWORD = "12345";
 
     @User(
-            username = REGISTERED_USERNAME,
             categories = @Category(archived = true)
     )
     @Test
     @DisplayName("Профиль содержит архивную категорию")
-    void archivedCategoryShouldPresentInCategoriesList(CategoryJson category) {
+    void archivedCategoryShouldPresentInCategoriesList(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(REGISTERED_USERNAME, REGISTERED_PASSWORD)
+                .login(user.username(), user.testData().password())
                 .openProfileMenu()
                 .openProfile()
                 .showArchivedCategories()
-                .checkArchivedCategoryIsDisplayed(category.name())
-                .unarchiveCategory(category.name())
-                .checkActiveCategoryIsDisplayed(category.name());
+                .checkArchivedCategoryIsDisplayed(user.testData().categories().getFirst().name())
+                .unarchiveCategory(user.testData().categories().getFirst().name())
+                .checkActiveCategoryIsDisplayed(user.testData().categories().getFirst().name());
     }
 
     @User(
-            username = REGISTERED_USERNAME,
             categories = @Category(archived = false)
     )
     @Test
     @DisplayName("Профиль содержит активную категорию")
-    void activeCategoryShouldPresentInCategoriesList(CategoryJson category) {
+    void activeCategoryShouldPresentInCategoriesList(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(REGISTERED_USERNAME, REGISTERED_PASSWORD)
+                .login(user.username(), user.testData().password())
                 .openProfileMenu()
                 .openProfile()
-                .checkActiveCategoryIsDisplayed(category.name())
-                .archiveCategory(category.name())
+                .checkActiveCategoryIsDisplayed(user.testData().categories().getFirst().name())
+                .archiveCategory(user.testData().categories().getFirst().name())
                 .showArchivedCategories()
-                .checkArchivedCategoryIsDisplayed(category.name());
+                .checkArchivedCategoryIsDisplayed(user.testData().categories().getFirst().name());
     }
 }
