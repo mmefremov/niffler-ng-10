@@ -6,6 +6,7 @@ import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.FriendshipStatus;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
+import org.eclipse.jetty.http.HttpStatus;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -34,9 +35,9 @@ public class UsersApiClient implements UsersClient {
         Response<UserJson> response;
         try {
             Response<Void> authResponse = authApiClient.register(username, password);
-            assertThat(authResponse.isSuccessful()).isTrue();
+            assertThat(authResponse.code()).isEqualTo(HttpStatus.OK_200);
             response = usersApi.currentUser(username).execute();
-            assertThat(response.isSuccessful()).isTrue();
+            assertThat(authResponse.code()).isEqualTo(HttpStatus.OK_200);
         } catch (IOException e) {
             throw new AssertionError(e);
         }
@@ -49,7 +50,7 @@ public class UsersApiClient implements UsersClient {
             UserJson user = createUser(RandomDataUtils.randomUsername(), UserExtension.DEFAULT_PASSWORD);
             try {
                 Response<UserJson> response = usersApi.sendInvitation(user.username(), targetUser.username()).execute();
-                assertThat(response.isSuccessful()).isTrue();
+                assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
             } catch (IOException e) {
                 throw new AssertionError(e);
             }
@@ -57,7 +58,7 @@ public class UsersApiClient implements UsersClient {
         Response<List<UserJson>> response;
         try {
             response = usersApi.friends(targetUser.username()).execute();
-            assertThat(response.isSuccessful()).isTrue();
+            assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
         } catch (IOException e) {
             throw new AssertionError(e);
         }
@@ -73,7 +74,7 @@ public class UsersApiClient implements UsersClient {
             UserJson user = createUser(RandomDataUtils.randomUsername(), UserExtension.DEFAULT_PASSWORD);
             try {
                 Response<UserJson> response = usersApi.sendInvitation(targetUser.username(), user.username()).execute();
-                assertThat(response.isSuccessful()).isTrue();
+                assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
                 invitations.add(response.body());
             } catch (IOException e) {
                 throw new AssertionError(e);
@@ -89,9 +90,9 @@ public class UsersApiClient implements UsersClient {
             UserJson user = createUser(RandomDataUtils.randomUsername(), UserExtension.DEFAULT_PASSWORD);
             try {
                 Response<UserJson> sendResponse = usersApi.sendInvitation(user.username(), targetUser.username()).execute();
-                assertThat(sendResponse.isSuccessful()).isTrue();
+                assertThat(sendResponse.code()).isEqualTo(HttpStatus.OK_200);
                 Response<UserJson> acceptResponse = usersApi.acceptInvitation(targetUser.username(), user.username()).execute();
-                assertThat(sendResponse.isSuccessful()).isTrue();
+                assertThat(acceptResponse.code()).isEqualTo(HttpStatus.OK_200);
                 friends.add(acceptResponse.body());
             } catch (IOException e) {
                 throw new AssertionError(e);
