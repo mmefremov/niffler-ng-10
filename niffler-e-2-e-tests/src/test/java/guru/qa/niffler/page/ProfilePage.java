@@ -4,6 +4,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.page.component.Calendar;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
 import javax.annotation.Nonnull;
@@ -31,6 +32,7 @@ public class ProfilePage {
     private final Calendar calendar = new Calendar($(".ProfileCalendar"));
 
     @Nonnull
+    @Step("Show archived categories")
     public ProfilePage showArchivedCategories() {
         if (!showArchivedCheckbox.isSelected()) {
             showArchivedCheckbox.click();
@@ -39,12 +41,14 @@ public class ProfilePage {
     }
 
     @Nonnull
+    @Step("Check active category is displayed")
     public ProfilePage checkActiveCategoryIsDisplayed(String category) {
         activeCategories.find(text(category)).shouldBe(visible);
         return this;
     }
 
     @Nonnull
+    @Step("Archive category")
     public ProfilePage archiveCategory(String category) {
         activeCategories.find(text(category))
                 .find(archiveCategoryButtonSelector).click();
@@ -53,12 +57,14 @@ public class ProfilePage {
     }
 
     @Nonnull
+    @Step("Check archived category is displayed")
     public ProfilePage checkArchivedCategoryIsDisplayed(String category) {
         archivedCategories.find(text(category)).shouldBe(visible);
         return this;
     }
 
     @Nonnull
+    @Step("Unarchive category")
     public ProfilePage unarchiveCategory(String category) {
         archivedCategories.find(text(category))
                 .find(unarchiveCategoryButtonSelector).click();

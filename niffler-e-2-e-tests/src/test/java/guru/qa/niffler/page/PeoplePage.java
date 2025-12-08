@@ -2,6 +2,7 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
@@ -23,6 +24,7 @@ public class PeoplePage {
     private final By requestLabel = By.cssSelector(".MuiChip-label");
 
     @Nonnull
+    @Step("Check that all people table contains waiting answer from friend '{friendName}'")
     public PeoplePage allPeoplesTableShouldContainWaitingAnswerFromFriend(String friendName) {
         allPeopleTab.click();
         searchInput.setValue(friendName).sendKeys(Keys.ENTER);

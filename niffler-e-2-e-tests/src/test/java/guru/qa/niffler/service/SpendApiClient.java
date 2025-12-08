@@ -5,6 +5,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
+import io.qameta.allure.Step;
 import org.eclipse.jetty.http.HttpStatus;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -34,6 +35,7 @@ public class SpendApiClient implements SpendClient {
 
     @Nonnull
     @Override
+    @Step("Create spend")
     public SpendJson createSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
@@ -47,6 +49,7 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Nonnull
+    @Step("Edit spend")
     public SpendJson editSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
@@ -60,6 +63,7 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Nonnull
+    @Step("Get spend")
     public SpendJson getSpend(String id) {
         final Response<SpendJson> response;
         try {
@@ -73,6 +77,7 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Nonnull
+    @Step("Get all spends for '{username}'")
     public List<SpendJson> allSpends(String username,
                                      @Nullable CurrencyValues currency,
                                      @Nullable String from,
@@ -90,6 +95,7 @@ public class SpendApiClient implements SpendClient {
                 : Collections.emptyList();
     }
 
+    @Step("Remove spends from '{username}'")
     public void removeSpends(String username, List<String> ids) {
         final Response<Void> response;
         try {
@@ -103,6 +109,7 @@ public class SpendApiClient implements SpendClient {
 
     @Nonnull
     @Override
+    @Step("Create category")
     public CategoryJson createCategory(CategoryJson category) {
         final Response<CategoryJson> response;
         try {
@@ -117,6 +124,7 @@ public class SpendApiClient implements SpendClient {
 
     @Nonnull
     @Override
+    @Step("Update category")
     public CategoryJson updateCategory(CategoryJson category) {
         final Response<CategoryJson> response;
         try {
@@ -130,6 +138,7 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Nonnull
+    @Step("Get all categories for '{username}'")
     public List<CategoryJson> allCategories(String username) {
         final Response<List<CategoryJson>> response;
         try {

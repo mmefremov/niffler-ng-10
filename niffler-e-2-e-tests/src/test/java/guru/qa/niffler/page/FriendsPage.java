@@ -2,6 +2,7 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
 import javax.annotation.Nonnull;
@@ -24,6 +25,7 @@ public class FriendsPage {
     private final By unfriendButton = By.xpath(".//button[text()='Unfriend']");
 
     @Nonnull
+    @Step("Check that requests table contains income friend {friendName}")
     public FriendsPage requestsTableShouldContainIncomeFriend(String friendName) {
         SelenideElement friendRow = requestsTable.find(text(friendName)).shouldBe(visible);
         friendRow.find(acceptButton).shouldBe(visible);
@@ -32,6 +34,7 @@ public class FriendsPage {
     }
 
     @Nonnull
+    @Step("Check that friends table contains friend '{friendName}'")
     public FriendsPage friendsTableShouldContainFriend(String friendName) {
         friendsTable.find(text(friendName)).shouldBe(visible)
                 .find(unfriendButton).shouldBe(visible);
@@ -39,12 +42,14 @@ public class FriendsPage {
     }
 
     @Nonnull
+    @Step("Check that requests table is empty")
     public FriendsPage friendsTableShouldBeEmpty() {
         friendsTable.shouldBe(empty);
         return this;
     }
 
     @Nonnull
+    @Step("Open people tab")
     public PeoplePage openPeopleTab() {
         allPeopleTab.click();
         return new PeoplePage();

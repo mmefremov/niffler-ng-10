@@ -6,6 +6,7 @@ import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.FriendshipStatus;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
+import io.qameta.allure.Step;
 import org.eclipse.jetty.http.HttpStatus;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -35,6 +36,7 @@ public class UsersApiClient implements UsersClient {
 
     @Nonnull
     @Override
+    @Step("Create user '{username}'")
     public UserJson createUser(String username, String password) {
         Response<UserJson> response;
         try {
@@ -50,6 +52,7 @@ public class UsersApiClient implements UsersClient {
 
     @Nonnull
     @Override
+    @Step("Add income invitation")
     public List<UserJson> addIncomeInvitation(UserJson targetUser, int count) {
         for (int i = 0; i < count; i++) {
             UserJson user = createUser(RandomDataUtils.randomUsername(), UserExtension.DEFAULT_PASSWORD);
@@ -74,6 +77,7 @@ public class UsersApiClient implements UsersClient {
 
     @Nonnull
     @Override
+    @Step("Add outcome invitation")
     public List<UserJson> addOutcomeInvitation(UserJson targetUser, int count) {
         List<UserJson> invitations = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -91,6 +95,7 @@ public class UsersApiClient implements UsersClient {
 
     @Nonnull
     @Override
+    @Step("Add friend")
     public List<UserJson> addFriend(UserJson targetUser, int count) {
         List<UserJson> friends = new ArrayList<>();
         for (int i = 0; i < count; i++) {

@@ -8,6 +8,7 @@ import guru.qa.niffler.data.repository.impl.SpendRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -25,6 +26,7 @@ public class SpendDbClient implements SpendClient {
 
     @Nonnull
     @Override
+    @Step("Create spend")
     public SpendJson createSpend(SpendJson spend) {
         return xaTransactionTemplate.execute(() -> {
                                                  SpendEntity spendEntity = SpendEntity.fromJson(spend);
@@ -41,6 +43,7 @@ public class SpendDbClient implements SpendClient {
 
     @Nonnull
     @Override
+    @Step("Create category")
     public CategoryJson createCategory(CategoryJson category) {
         return xaTransactionTemplate.execute(() -> CategoryJson.fromEntity(
                                                      spendRepository.createCategory(
@@ -52,6 +55,7 @@ public class SpendDbClient implements SpendClient {
 
     @Nonnull
     @Override
+    @Step("Update category")
     public CategoryJson updateCategory(CategoryJson category) {
         return xaTransactionTemplate.execute(() -> CategoryJson.fromEntity(
                                                      spendRepository.updateCategory(

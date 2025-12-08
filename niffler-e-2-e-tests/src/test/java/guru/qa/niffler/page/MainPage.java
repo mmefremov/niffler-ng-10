@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 import org.openqa.selenium.Keys;
 
 import javax.annotation.Nonnull;
@@ -22,6 +23,7 @@ public class MainPage {
     private final SelenideElement spendingTable = $("#spendings");
 
     @Nonnull
+    @Step("Check that page loaded")
     public MainPage checkThatPageLoaded() {
         statistics.shouldBe(visible);
         spendingTable.should(visible);
@@ -29,24 +31,28 @@ public class MainPage {
     }
 
     @Nonnull
+    @Step("Open profile menu")
     public MainPage openProfileMenu() {
         profileMenuButton.click();
         return this;
     }
 
     @Nonnull
+    @Step("Open profile")
     public ProfilePage openProfile() {
         profileLink.click();
         return new ProfilePage();
     }
 
     @Nonnull
+    @Step("Open friends")
     public FriendsPage openFriends() {
         friendsLink.click();
         return new FriendsPage();
     }
 
     @Nonnull
+    @Step("Edit spending")
     public EditSpendingPage editSpending(String description) {
         searchInput.setValue(description).sendKeys(Keys.ENTER);
         spendingTable.$$("tbody tr").find(text(description)).$$("td").get(5).click();
@@ -54,6 +60,7 @@ public class MainPage {
     }
 
     @Nonnull
+    @Step("Check that table contains '{description}'")
     public MainPage checkThatTableContains(String description) {
         spendingTable.$$("tbody tr").find(text(description)).should(visible);
         return this;
