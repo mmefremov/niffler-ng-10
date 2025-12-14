@@ -7,6 +7,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,6 @@ class ProfileTest {
     void archivedCategoryShouldPresentInCategoriesList(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .openProfileMenu()
                 .openProfile()
                 .showArchivedCategories()
                 .checkArchivedCategoryIsDisplayed(user.testData().categories().getFirst().name())
@@ -39,11 +39,25 @@ class ProfileTest {
     void activeCategoryShouldPresentInCategoriesList(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .openProfileMenu()
                 .openProfile()
                 .checkActiveCategoryIsDisplayed(user.testData().categories().getFirst().name())
                 .archiveCategory(user.testData().categories().getFirst().name())
                 .showArchivedCategories()
                 .checkArchivedCategoryIsDisplayed(user.testData().categories().getFirst().name());
+    }
+
+    @User
+    @Test
+    @DisplayName("Редактирование имени профиля")
+    void editProfileName(UserJson user) {
+        String newName = RandomDataUtils.randomName();
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .openProfile()
+                .setNewName(newName)
+                .saveChanges()
+                .returnToMainPage()
+                .openProfile()
+                .checkUserName(newName);
     }
 }

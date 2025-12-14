@@ -39,6 +39,12 @@ public class RandomDataUtils {
     }
 
     @Nonnull
+    public static Long randomInteger() {
+        int digits = faker.number().randomDigitNotZero();
+        return faker.number().randomNumber(digits, false);
+    }
+
+    @Nonnull
     public static String randomSentence(int wordsCount) {
         return faker.lorem().sentence(wordsCount);
     }

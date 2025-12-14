@@ -8,6 +8,7 @@ import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
 
 @WebTest
@@ -33,6 +34,20 @@ public class SpendingTest {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .editSpending(spendDescription)
+                .setNewSpendingDescription(newDescription)
+                .save()
+                .checkThatTableContains(newDescription);
+    }
+
+    @User
+    @Test
+    void addNewSpending(UserJson user) {
+        String newDescription = RandomDataUtils.randomSentence(1);
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .addSpending()
+                .setNewSpendingAmount(RandomDataUtils.randomInteger())
+                .setNewSpendingCategory(RandomDataUtils.randomCategoryName())
                 .setNewSpendingDescription(newDescription)
                 .save()
                 .checkThatTableContains(newDescription);
