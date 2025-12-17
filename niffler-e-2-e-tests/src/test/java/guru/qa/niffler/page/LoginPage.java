@@ -10,12 +10,16 @@ import static com.codeborne.selenide.Condition.ownText;
 import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
-public class LoginPage {
+public class LoginPage extends BasePage<LoginPage> {
 
     private final SelenideElement usernameInput = $("#username");
+
     private final SelenideElement passwordInput = $("#password");
+
     private final SelenideElement submitButton = $("#login-button");
+
     private final SelenideElement registerButton = $("#register-button");
+
     private final SelenideElement formError = $(".form__error");
 
     @Nonnull

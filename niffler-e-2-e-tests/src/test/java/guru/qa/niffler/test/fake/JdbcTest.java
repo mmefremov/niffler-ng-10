@@ -1,24 +1,29 @@
 package guru.qa.niffler.test.fake;
 
+import guru.qa.niffler.jupiter.extension.SpendClientInjector;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.SpendDbClient;
+import guru.qa.niffler.service.SpendClient;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Date;
 
 @Disabled
+@ExtendWith(SpendClientInjector.class)
 class JdbcTest {
+
+    private SpendClient spendCLient;
 
     @Test
     void txTest() {
-        new SpendDbClient().createSpend(
+        SpendJson spend = spendCLient.createSpend(
                 new SpendJson(
                         null,
                         new Date(),

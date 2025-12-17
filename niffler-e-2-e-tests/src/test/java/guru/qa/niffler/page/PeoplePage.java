@@ -15,10 +15,12 @@ import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.$x;
 
 @ParametersAreNonnullByDefault
-public class PeoplePage {
+public class PeoplePage extends BasePage<PeoplePage> {
 
     private final SelenideElement allPeopleTab = $x("//a[@href='/people/all']");
+
     private final ElementsCollection allPeopleTable = $$("#all tr");
+
     private final By requestLabel = By.cssSelector(".MuiChip-label");
 
     private final SearchField searchField = new SearchField();

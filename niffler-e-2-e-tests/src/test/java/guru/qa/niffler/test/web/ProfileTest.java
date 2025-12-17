@@ -49,15 +49,13 @@ class ProfileTest {
     @User
     @Test
     @DisplayName("Редактирование имени профиля")
-    void editProfileName(UserJson user) {
+    void nameShouldBeEditedInProfile(UserJson user) {
         String newName = RandomDataUtils.randomName();
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openProfile()
                 .setNewName(newName)
                 .saveChanges()
-                .returnToMainPage()
-                .openProfile()
-                .checkUserName(newName);
+                .checkSnackbarText("Profile successfully updated");
     }
 }

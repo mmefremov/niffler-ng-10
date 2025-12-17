@@ -11,26 +11,32 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$x;
 import static com.codeborne.selenide.Selenide.$x;
 
 @ParametersAreNonnullByDefault
-public class ProfilePage {
+public class ProfilePage extends BasePage<ProfilePage> {
 
     public static String url = Config.getInstance().frontUrl() + "profile";
 
     private final SelenideElement nameInput = $("#name");
 
     private final SelenideElement saveChangesButton = $("button[type='submit']");
+
     private final SelenideElement showArchivedCheckbox = $(".PrivateSwitchBase-input");
+
     private final ElementsCollection activeCategories = $$x("//div[./div[contains(@class,'MuiChip-colorPrimary')]]");
+
     private final ElementsCollection archivedCategories = $$x("//div[./div[contains(@class,'MuiChip-colorDefault')]]");
+
     private final By archiveCategoryButtonSelector = By.cssSelector("[aria-label='Archive category']");
+
     private final By unarchiveCategoryButtonSelector = By.cssSelector("[aria-label='Unarchive category']");
+
     private final SelenideElement archiveConfirmationButton = $x("//button[text()='Archive']");
+
     private final SelenideElement unarchiveConfirmationButton = $x("//button[text()='Unarchive']");
 
     private final Header header = new Header();
@@ -88,16 +94,5 @@ public class ProfilePage {
                 .find(unarchiveCategoryButtonSelector).click();
         unarchiveConfirmationButton.click();
         return this;
-    }
-
-    @Nonnull
-    @Step("Return to main page")
-    public MainPage returnToMainPage() {
-        return header.toMainPage();
-    }
-
-    @Step("Check that name is {name}")
-    public void checkUserName(String name) {
-        nameInput.shouldHave(value(name));
     }
 }

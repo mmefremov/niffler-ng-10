@@ -11,12 +11,14 @@ import java.util.Date;
 import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
-public class EditSpendingPage {
+public class EditSpendingPage extends BasePage<EditSpendingPage> {
 
     private final SelenideElement amountInput = $("#amount");
 
     private final SelenideElement categoryInput = $("#category");
+
     private final SelenideElement descriptionInput = $("#description");
+
     private final SelenideElement saveBtn = $("#save");
 
     private final Calendar calendar = new Calendar();

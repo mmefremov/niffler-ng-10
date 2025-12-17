@@ -17,13 +17,18 @@ import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.$x;
 
 @ParametersAreNonnullByDefault
-public class FriendsPage {
+public class FriendsPage extends BasePage<FriendsPage> {
 
     private final SelenideElement allPeopleTab = $x("//a[@href='/people/all']");
+
     private final ElementsCollection requestsTable = $$("#requests tr");
+
     private final ElementsCollection friendsTable = $$("#friends tr");
+
     private final By acceptButton = By.xpath(".//button[text()='Accept']");
+
     private final By declineButton = By.xpath(".//button[text()='Decline']");
+
     private final By unfriendButton = By.xpath(".//button[text()='Unfriend']");
 
     private final SelenideElement confirmDeclineButton = $(".MuiDialogActions-root button:nth-child(2)");
