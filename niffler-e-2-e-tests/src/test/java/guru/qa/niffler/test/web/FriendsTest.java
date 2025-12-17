@@ -24,7 +24,6 @@ class FriendsTest {
     void friendShouldBePresentInFriendsTable(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .openProfileMenu()
                 .openFriends()
                 .friendsTableShouldContainFriend(user.testData().friends().getFirst().username());
     }
@@ -35,7 +34,6 @@ class FriendsTest {
     void friendsTableShouldBeEmptyForNewUser(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .openProfileMenu()
                 .openFriends()
                 .friendsTableShouldBeEmpty();
     }
@@ -48,7 +46,6 @@ class FriendsTest {
     void incomeInvitationBePresentInFriendsTable(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .openProfileMenu()
                 .openFriends()
                 .requestsTableShouldContainIncomeFriend(user.testData().incomeInvitations().getFirst().username());
     }
@@ -61,9 +58,38 @@ class FriendsTest {
     void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .openProfileMenu()
                 .openFriends()
                 .openPeopleTab()
                 .allPeoplesTableShouldContainWaitingAnswerFromFriend(user.testData().outcomeInvitations().getFirst().username());
+    }
+
+    @User(
+            incomeInvitations = 1
+    )
+    @Test
+    @DisplayName("Прием заявки в друзья")
+    void acceptIncomeInvitation(UserJson user) {
+        String friendName = user.testData().incomeInvitations().getFirst().username();
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .openFriends()
+                .requestsTableShouldContainIncomeFriend(friendName)
+                .acceptInvitationFrom(friendName)
+                .friendsTableShouldContainFriend(friendName);
+    }
+
+    @User(
+            incomeInvitations = 1
+    )
+    @Test
+    @DisplayName("Отклонение заявки в друзья")
+    void declineIncomeInvitation(UserJson user) {
+        String friendName = user.testData().incomeInvitations().getFirst().username();
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .openFriends()
+                .requestsTableShouldContainIncomeFriend(friendName)
+                .declineInvitationFrom(friendName)
+                .friendsTableShouldBeEmpty();
     }
 }

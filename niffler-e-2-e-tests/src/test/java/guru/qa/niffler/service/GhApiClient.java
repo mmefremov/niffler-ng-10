@@ -3,6 +3,7 @@ package guru.qa.niffler.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.api.GhApi;
 import guru.qa.niffler.config.Config;
+import io.qameta.allure.Step;
 import lombok.SneakyThrows;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -27,6 +28,7 @@ public class GhApiClient {
 
     @SneakyThrows
     @Nonnull
+    @Step("Get issue state '{issueNumber}'")
     public String issueState(String issueNumber) {
         JsonNode responseBody = ghApi.issue(
                 "Bearer " + System.getenv(GH_TOKEN_ENV),

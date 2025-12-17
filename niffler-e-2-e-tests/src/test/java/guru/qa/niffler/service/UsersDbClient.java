@@ -14,6 +14,7 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.FriendshipStatus;
 import guru.qa.niffler.model.UserJson;
+import io.qameta.allure.Step;
 import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -55,6 +56,7 @@ public class UsersDbClient implements UsersClient {
 
     @Nonnull
     @Override
+    @Step("Create user '{username}'")
     public UserJson createUser(String username, String password) {
         return xaTransactionTemplate.execute(() -> {
                                                  AuthUserEntity authUser = authUserEntity(username, password);
@@ -69,6 +71,7 @@ public class UsersDbClient implements UsersClient {
 
     @Nonnull
     @Override
+    @Step("Add income invitation")
     public List<UserJson> addIncomeInvitation(UserJson targetUser, int count) {
         final List<UserJson> result = new ArrayList<>();
         if (count > 0) {
@@ -94,6 +97,7 @@ public class UsersDbClient implements UsersClient {
 
     @Nonnull
     @Override
+    @Step("Add outcome invitation")
     public List<UserJson> addOutcomeInvitation(UserJson targetUser, int count) {
         final List<UserJson> result = new ArrayList<>();
         if (count > 0) {
@@ -119,6 +123,7 @@ public class UsersDbClient implements UsersClient {
 
     @Nonnull
     @Override
+    @Step("Add friend")
     public List<UserJson> addFriend(UserJson targetUser, int count) {
         final List<UserJson> result = new ArrayList<>();
         if (count > 0) {
