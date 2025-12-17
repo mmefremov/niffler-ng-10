@@ -57,7 +57,7 @@ public class FriendsPage {
     }
 
     @Nonnull
-    @Step("Check that requests table is empty")
+    @Step("Accept invitation from '{friendName}'")
     public FriendsPage acceptInvitationFrom(String friendName) {
         requestsTable.find(text(friendName))
                 .find(acceptButton).click();
@@ -65,7 +65,7 @@ public class FriendsPage {
     }
 
     @Nonnull
-    @Step("Check that requests table is empty")
+    @Step("Decline invitation from '{friendName}'")
     public FriendsPage declineInvitationFrom(String friendName) {
         requestsTable.find(text(friendName))
                 .find(declineButton).click();

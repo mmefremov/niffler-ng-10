@@ -22,7 +22,7 @@ public class SpendingTable {
 
     private final SelenideElement periodInput = self.$("#period");
 
-    private final SelenideElement deleteButton = self.$("##delete");
+    private final SelenideElement deleteButton = self.$("#delete");
 
     private final By editButton = By.cssSelector("button");
 
