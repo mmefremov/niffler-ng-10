@@ -9,13 +9,15 @@ import static com.codeborne.selenide.Selenide.$;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @ParametersAreNonnullByDefault
-public class SearchField {
-
-    private final SelenideElement self = $("form[class*='MuiBox-root']");
+public class SearchField extends BaseComponent<SearchField> {
 
     private final SelenideElement input = self.find("input");
 
     private final SelenideElement inputClearButton = self.find("button");
+
+    public SearchField() {
+        super($("form[class*='MuiBox-root']"));
+    }
 
     @Step("Search with query '{query}'")
     public SearchField search(String query) {
