@@ -3,7 +3,6 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.page.component.Header;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
@@ -38,8 +37,6 @@ public class ProfilePage extends BasePage<ProfilePage> {
     private final SelenideElement archiveConfirmationButton = $x("//button[text()='Archive']");
 
     private final SelenideElement unarchiveConfirmationButton = $x("//button[text()='Unarchive']");
-
-    private final Header header = new Header();
 
     @Nonnull
     @Step("Set name {name}")
