@@ -75,6 +75,7 @@ class FriendsTest {
                 .openFriends()
                 .requestsTableShouldContainIncomeFriend(friendName)
                 .acceptInvitationFrom(friendName)
+                .checkSnackbarText("Invitation of %s accepted".formatted(friendName))
                 .friendsTableShouldContainFriend(friendName);
     }
 
@@ -90,6 +91,7 @@ class FriendsTest {
                 .openFriends()
                 .requestsTableShouldContainIncomeFriend(friendName)
                 .declineInvitationFrom(friendName)
+                .checkSnackbarText("Invitation of %s is declined".formatted(friendName))
                 .friendsTableShouldBeEmpty();
     }
 }
