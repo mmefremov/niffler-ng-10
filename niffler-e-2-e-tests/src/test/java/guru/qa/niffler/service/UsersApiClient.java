@@ -2,7 +2,6 @@ package guru.qa.niffler.service;
 
 import com.google.common.base.Stopwatch;
 import guru.qa.niffler.api.UsersApi;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.FriendshipStatus;
 import guru.qa.niffler.model.UserJson;
@@ -10,8 +9,6 @@ import guru.qa.niffler.utils.RandomDataUtils;
 import io.qameta.allure.Step;
 import org.eclipse.jetty.http.HttpStatus;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -24,17 +21,15 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ParametersAreNonnullByDefault
-public class UsersApiClient implements UsersClient {
+public class UsersApiClient extends RestClient implements UsersClient {
 
-    private static final Config CFG = Config.getInstance();
-
-    private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(CFG.userdataUrl())
-            .addConverterFactory(JacksonConverterFactory.create())
-            .build();
-
-    private final UsersApi usersApi = retrofit.create(UsersApi.class);
+    private final UsersApi usersApi;
     private final AuthApiClient authApiClient = new AuthApiClient();
+
+    public UsersApiClient() {
+        super(CFG.userdataUrl());
+        this.usersApi = create(UsersApi.class);
+    }
 
     @Nonnull
     @Override
