@@ -10,6 +10,13 @@ import java.util.List;
 public interface UsersClient {
 
     @Nonnull
+    static UsersClient getInstance() {
+        return "api".equals(System.getProperty("client.impl"))
+                ? new UsersApiClient()
+                : new UsersDbClient();
+    }
+    
+    @Nonnull
     UserJson createUser(String username, String password);
 
     @Nonnull

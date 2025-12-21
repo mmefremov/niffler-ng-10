@@ -1,7 +1,6 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
@@ -13,8 +12,6 @@ import org.junit.jupiter.api.Test;
 
 @WebTest
 public class SpendingTest {
-
-    private static final Config CFG = Config.getInstance();
 
     @User(
             spendings = {
@@ -31,12 +28,12 @@ public class SpendingTest {
         final String spendDescription = user.testData().spendings().getFirst().description();
         final String newDescription = "Обучение Niffler Next Generation";
 
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .editSpending(spendDescription)
                 .setNewSpendingDescription(newDescription)
-                .save()
-                .checkSnackbarText("Spending is edited successfully")
+                .saveSpending()
+                .checkAlert("Spending is edited successfully")
                 .checkThatTableContains(newDescription);
     }
 
@@ -44,14 +41,14 @@ public class SpendingTest {
     @Test
     void addNewSpending(UserJson user) {
         String newDescription = RandomDataUtils.randomSentence(1);
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .addSpending()
                 .setNewSpendingAmount(RandomDataUtils.randomInteger())
                 .setNewSpendingCategory(RandomDataUtils.randomCategoryName())
                 .setNewSpendingDescription(newDescription)
-                .save()
-                .checkSnackbarText("New spending is successfully created")
+                .saveSpending()
+                .checkAlert("New spending is successfully created")
                 .checkThatTableContains(newDescription);
     }
 }

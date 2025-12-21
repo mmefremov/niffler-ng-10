@@ -1,7 +1,9 @@
 package guru.qa.niffler.model;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public record TestData(String password,
                        List<UserJson> incomeInvitations,
                        List<UserJson> outcomeInvitations,

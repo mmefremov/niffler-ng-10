@@ -1,7 +1,6 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
@@ -14,15 +13,13 @@ import org.junit.jupiter.api.Test;
 @WebTest
 class ProfileTest {
 
-    private static final Config CFG = Config.getInstance();
-
     @User(
             categories = @Category(archived = true)
     )
     @Test
     @DisplayName("Профиль содержит архивную категорию")
     void archivedCategoryShouldPresentInCategoriesList(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openProfile()
                 .showArchivedCategories()
@@ -37,7 +34,7 @@ class ProfileTest {
     @Test
     @DisplayName("Профиль содержит активную категорию")
     void activeCategoryShouldPresentInCategoriesList(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openProfile()
                 .checkActiveCategoryIsDisplayed(user.testData().categories().getFirst().name())
@@ -51,11 +48,11 @@ class ProfileTest {
     @DisplayName("Редактирование имени профиля")
     void nameShouldBeEditedInProfile(UserJson user) {
         String newName = RandomDataUtils.randomName();
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openProfile()
                 .setNewName(newName)
                 .saveChanges()
-                .checkSnackbarText("Profile successfully updated");
+                .checkAlert("Profile successfully updated");
     }
 }

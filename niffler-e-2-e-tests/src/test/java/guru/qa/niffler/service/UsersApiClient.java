@@ -1,7 +1,7 @@
 package guru.qa.niffler.service;
 
 import com.google.common.base.Stopwatch;
-import guru.qa.niffler.api.UsersApi;
+import guru.qa.niffler.api.UserdataApi;
 import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.FriendshipStatus;
 import guru.qa.niffler.model.UserJson;
@@ -23,12 +23,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ParametersAreNonnullByDefault
 public class UsersApiClient extends RestClient implements UsersClient {
 
-    private final UsersApi usersApi;
+    private final UserdataApi userdataApi;
     private final AuthApiClient authApiClient = new AuthApiClient();
 
     public UsersApiClient() {
         super(CFG.userdataUrl());
-        this.usersApi = create(UsersApi.class);
+        this.userdataApi = create(UserdataApi.class);
     }
 
     @Nonnull
@@ -45,7 +45,7 @@ public class UsersApiClient extends RestClient implements UsersClient {
 
             while (sw.elapsed(TimeUnit.MILLISECONDS) < maxWaitTime) {
                 try {
-                    UserJson userJson = usersApi.currentUser(username).execute().body();
+                    UserJson userJson = userdataApi.currentUser(username).execute().body();
                     if (userJson != null && userJson.id() != null) {
                         return userJson;
                     } else {
@@ -70,7 +70,7 @@ public class UsersApiClient extends RestClient implements UsersClient {
         for (int i = 0; i < count; i++) {
             UserJson user = createUser(RandomDataUtils.randomUsername(), UserExtension.DEFAULT_PASSWORD);
             try {
-                Response<UserJson> response = usersApi.sendInvitation(user.username(), targetUser.username()).execute();
+                Response<UserJson> response = userdataApi.sendInvitation(user.username(), targetUser.username()).execute();
                 assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
             } catch (IOException e) {
                 throw new AssertionError(e);
@@ -78,7 +78,7 @@ public class UsersApiClient extends RestClient implements UsersClient {
         }
         Response<List<UserJson>> response;
         try {
-            response = usersApi.friends(targetUser.username()).execute();
+            response = userdataApi.friends(targetUser.username(), null).execute();
             assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
         } catch (IOException e) {
             throw new AssertionError(e);
@@ -96,7 +96,7 @@ public class UsersApiClient extends RestClient implements UsersClient {
         for (int i = 0; i < count; i++) {
             UserJson user = createUser(RandomDataUtils.randomUsername(), UserExtension.DEFAULT_PASSWORD);
             try {
-                Response<UserJson> response = usersApi.sendInvitation(targetUser.username(), user.username()).execute();
+                Response<UserJson> response = userdataApi.sendInvitation(targetUser.username(), user.username()).execute();
                 assertThat(response.code()).isEqualTo(HttpStatus.OK_200);
                 invitations.add(response.body());
             } catch (IOException e) {
@@ -114,9 +114,9 @@ public class UsersApiClient extends RestClient implements UsersClient {
         for (int i = 0; i < count; i++) {
             UserJson user = createUser(RandomDataUtils.randomUsername(), UserExtension.DEFAULT_PASSWORD);
             try {
-                Response<UserJson> sendResponse = usersApi.sendInvitation(user.username(), targetUser.username()).execute();
+                Response<UserJson> sendResponse = userdataApi.sendInvitation(user.username(), targetUser.username()).execute();
                 assertThat(sendResponse.code()).isEqualTo(HttpStatus.OK_200);
-                Response<UserJson> acceptResponse = usersApi.acceptInvitation(targetUser.username(), user.username()).execute();
+                Response<UserJson> acceptResponse = userdataApi.acceptInvitation(targetUser.username(), user.username()).execute();
                 assertThat(acceptResponse.code()).isEqualTo(HttpStatus.OK_200);
                 friends.add(acceptResponse.body());
             } catch (IOException e) {

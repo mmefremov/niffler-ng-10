@@ -26,9 +26,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+import static java.util.Objects.requireNonNull;
 
 @ParametersAreNonnullByDefault
-public final class UsersDbClient implements UsersClient {
+public class UsersDbClient implements UsersClient {
 
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -57,7 +58,7 @@ public final class UsersDbClient implements UsersClient {
     @Override
     @Step("Create user '{username}'")
     public UserJson createUser(String username, String password) {
-        return xaTransactionTemplate.execute(() -> {
+        return requireNonNull(xaTransactionTemplate.execute(() -> {
                                                  AuthUserEntity authUser = authUserEntity(username, password);
                                                  authUserRepository.create(authUser);
                                                  return UserJson.fromEntity(
@@ -65,7 +66,7 @@ public final class UsersDbClient implements UsersClient {
                                                          null
                                                  );
                                              }
-        );
+        ));
     }
 
     @Nonnull
@@ -146,7 +147,6 @@ public final class UsersDbClient implements UsersClient {
         return result;
     }
 
-    @Nonnull
     private UserEntity userEntity(String username) {
         UserEntity ue = new UserEntity();
         ue.setUsername(username);
@@ -154,7 +154,6 @@ public final class UsersDbClient implements UsersClient {
         return ue;
     }
 
-    @Nonnull
     private AuthUserEntity authUserEntity(String username, String password) {
         AuthUserEntity authUser = new AuthUserEntity();
         authUser.setUsername(username);

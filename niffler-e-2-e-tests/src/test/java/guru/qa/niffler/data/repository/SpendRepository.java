@@ -19,7 +19,7 @@ public interface SpendRepository {
         return switch (System.getProperty("repository", "jpa")) {
             case "jpa" -> new SpendRepositoryHibernate();
             case "jdbc" -> new SpendRepositoryJdbc();
-            case "sjdbc" -> new SpendRepositorySpringJdbc();
+            case "spring-jdbc" -> new SpendRepositorySpringJdbc();
             default ->
                     throw new IllegalArgumentException("Unknown repository type: " + System.getProperty("repository"));
         };

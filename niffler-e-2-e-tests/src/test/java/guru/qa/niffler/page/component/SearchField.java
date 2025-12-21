@@ -5,8 +5,9 @@ import io.qameta.allure.Step;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import static com.codeborne.selenide.Condition.empty;
+import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Selenide.$;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @ParametersAreNonnullByDefault
 public class SearchField extends BaseComponent<SearchField> {
@@ -28,8 +29,9 @@ public class SearchField extends BaseComponent<SearchField> {
 
     @Step("Clear search field if not empty")
     public SearchField clearIfNotEmpty() {
-        if (isNotEmpty(input.getValue())) {
+        if (input.is(not(empty))) {
             inputClearButton.click();
+            input.shouldBe(empty);
         }
         return this;
     }

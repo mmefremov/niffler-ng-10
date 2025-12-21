@@ -1,7 +1,6 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.UserJson;
@@ -14,15 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(BrowserExtension.class)
 class RegistrationTest {
 
-    private static final Config CFG = Config.getInstance();
-
     @Test
     @DisplayName("Успешная регистрация нового пользователя")
     void shouldRegisterNewUser() {
         String username = RandomDataUtils.randomUsername();
         String password = RandomDataUtils.randomPassword();
 
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .register()
                 .setUsername(username)
                 .setPassword(password)
@@ -37,7 +34,7 @@ class RegistrationTest {
     @Test
     @DisplayName("Ошибка при попытке регистрации существующего пользователя")
     void shouldNotRegisterUserWithExistingUsername(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .register()
                 .setUsername(user.username())
                 .setPassword(user.testData().password())
@@ -51,7 +48,7 @@ class RegistrationTest {
     void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual() {
         String username = RandomDataUtils.randomUsername();
 
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .register()
                 .setUsername(username)
                 .setPassword(RandomDataUtils.randomPassword())

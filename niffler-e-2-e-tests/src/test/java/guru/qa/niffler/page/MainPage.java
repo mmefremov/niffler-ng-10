@@ -13,6 +13,8 @@ import static com.codeborne.selenide.Selenide.$;
 @ParametersAreNonnullByDefault
 public class MainPage extends BasePage<MainPage> {
 
+    public static final String URL = CFG.frontUrl() + "main";
+    
     private final SelenideElement statistics = $("#stat");
 
     private final SpendingTable spendingTable = new SpendingTable();

@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Date;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public record SpendJson(
         @JsonProperty("id")
         UUID id,

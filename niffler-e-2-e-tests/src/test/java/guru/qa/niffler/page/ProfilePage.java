@@ -2,7 +2,6 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.config.Config;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
@@ -18,7 +17,7 @@ import static com.codeborne.selenide.Selenide.$x;
 @ParametersAreNonnullByDefault
 public class ProfilePage extends BasePage<ProfilePage> {
 
-    public static String url = Config.getInstance().frontUrl() + "profile";
+    public static final String URL = CFG.frontUrl() + "profile";
 
     private final SelenideElement nameInput = $("#name");
 

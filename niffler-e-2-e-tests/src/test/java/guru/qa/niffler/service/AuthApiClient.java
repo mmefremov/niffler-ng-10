@@ -25,7 +25,7 @@ public final class AuthApiClient extends RestClient {
                 username,
                 password,
                 password,
-                ThreadSafeCookieStore.INSTANCE.xsrfCookie()
+                ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN")
         ).execute();
     }
 }

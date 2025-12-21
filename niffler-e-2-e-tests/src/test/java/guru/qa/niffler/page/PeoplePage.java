@@ -17,6 +17,8 @@ import static com.codeborne.selenide.Selenide.$x;
 @ParametersAreNonnullByDefault
 public class PeoplePage extends BasePage<PeoplePage> {
 
+    public static final String URL = CFG.frontUrl() + "people/all";
+    
     private final SelenideElement allPeopleTab = $x("//a[@href='/people/all']");
 
     private final ElementsCollection allPeopleTable = $$("#all tr");

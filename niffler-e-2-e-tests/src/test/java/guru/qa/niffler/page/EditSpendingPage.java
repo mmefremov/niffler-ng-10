@@ -13,6 +13,8 @@ import static com.codeborne.selenide.Selenide.$;
 @ParametersAreNonnullByDefault
 public class EditSpendingPage extends BasePage<EditSpendingPage> {
 
+    public static final String URL = CFG.frontUrl() + "spending";
+
     private final SelenideElement amountInput = $("#amount");
 
     private final SelenideElement categoryInput = $("#category");
@@ -53,7 +55,7 @@ public class EditSpendingPage extends BasePage<EditSpendingPage> {
 
     @Nonnull
     @Step("Save spending")
-    public MainPage save() {
+    public MainPage saveSpending() {
         saveBtn.click();
         return new MainPage();
     }

@@ -1,7 +1,6 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.extension.UsersQueueExtension;
@@ -14,15 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith({BrowserExtension.class, UsersQueueExtension.class})
 class FriendsTest {
 
-    private static final Config CFG = Config.getInstance();
-
     @User(
             friends = 1
     )
     @Test
     @DisplayName("Таблица друзей содержит друга")
     void friendShouldBePresentInFriendsTable(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .friendsTableShouldContainFriend(user.testData().friends().getFirst().username());
@@ -32,7 +29,7 @@ class FriendsTest {
     @Test
     @DisplayName("Таблица друзей пустая")
     void friendsTableShouldBeEmptyForNewUser(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .friendsTableShouldBeEmpty();
@@ -44,7 +41,7 @@ class FriendsTest {
     @Test
     @DisplayName("Таблица друзей содержит входящий запрос")
     void incomeInvitationBePresentInFriendsTable(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .requestsTableShouldContainIncomeFriend(user.testData().incomeInvitations().getFirst().username());
@@ -56,7 +53,7 @@ class FriendsTest {
     @Test
     @DisplayName("Список всех людей содержит исходящий запрос")
     void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .openPeopleTab()
@@ -70,12 +67,12 @@ class FriendsTest {
     @DisplayName("Прием заявки в друзья")
     void acceptIncomeInvitation(UserJson user) {
         String friendName = user.testData().incomeInvitations().getFirst().username();
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .requestsTableShouldContainIncomeFriend(friendName)
                 .acceptInvitationFrom(friendName)
-                .checkSnackbarText("Invitation of %s accepted".formatted(friendName))
+                .checkAlert("Invitation of %s accepted".formatted(friendName))
                 .friendsTableShouldContainFriend(friendName);
     }
 
@@ -86,12 +83,12 @@ class FriendsTest {
     @DisplayName("Отклонение заявки в друзья")
     void declineIncomeInvitation(UserJson user) {
         String friendName = user.testData().incomeInvitations().getFirst().username();
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .requestsTableShouldContainIncomeFriend(friendName)
                 .declineInvitationFrom(friendName)
-                .checkSnackbarText("Invitation of %s is declined".formatted(friendName))
+                .checkAlert("Invitation of %s is declined".formatted(friendName))
                 .friendsTableShouldBeEmpty();
     }
 }

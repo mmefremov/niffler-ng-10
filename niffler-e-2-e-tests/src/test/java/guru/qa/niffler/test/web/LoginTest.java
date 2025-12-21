@@ -1,7 +1,6 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.UserJson;
@@ -13,13 +12,11 @@ import org.junit.jupiter.api.Test;
 @WebTest
 class LoginTest {
 
-    private static final Config CFG = Config.getInstance();
-
     @User
     @Test
     @DisplayName("Успешный вход пользователя")
     void mainPageShouldBeDisplayedAfterSuccessLogin(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkThatPageLoaded();
     }
@@ -30,7 +27,7 @@ class LoginTest {
     void userShouldStayOnLoginPageAfterLoginWithBadCredentials(UserJson user) {
         String wrongPassword = RandomDataUtils.randomPassword();
 
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(LoginPage.URL, LoginPage.class)
                 .tryToLogin(user.username(), wrongPassword)
                 .checkFormErrorText("Bad credentials");
     }
