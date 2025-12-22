@@ -36,6 +36,7 @@ public class SpendingTest {
                 .editSpending(spendDescription)
                 .setNewSpendingDescription(newDescription)
                 .save()
+                .checkSnackbarText("Spending is edited successfully")
                 .checkThatTableContains(newDescription);
     }
 
@@ -50,6 +51,7 @@ public class SpendingTest {
                 .setNewSpendingCategory(RandomDataUtils.randomCategoryName())
                 .setNewSpendingDescription(newDescription)
                 .save()
+                .checkSnackbarText("New spending is successfully created")
                 .checkThatTableContains(newDescription);
     }
 }
