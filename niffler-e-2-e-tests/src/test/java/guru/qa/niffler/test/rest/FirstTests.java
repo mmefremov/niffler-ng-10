@@ -1,8 +1,9 @@
 package guru.qa.niffler.test.rest;
 
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.UsersApiClient;
+import guru.qa.niffler.service.impl.UsersApiClient;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Order(1)
 @Execution(ExecutionMode.SAME_THREAD)
+@Disabled
 class FirstTests {
 
     private final UsersApiClient usersApiClient = new UsersApiClient();

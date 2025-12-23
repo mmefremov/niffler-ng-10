@@ -1,7 +1,8 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.impl;
 
 import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
+import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;
 import retrofit2.Response;
 

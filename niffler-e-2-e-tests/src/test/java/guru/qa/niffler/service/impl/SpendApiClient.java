@@ -1,9 +1,11 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.impl;
 
 import guru.qa.niffler.api.SpendApi;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.service.RestClient;
+import guru.qa.niffler.service.SpendClient;
 import io.qameta.allure.Step;
 import org.eclipse.jetty.http.HttpStatus;
 import retrofit2.Response;

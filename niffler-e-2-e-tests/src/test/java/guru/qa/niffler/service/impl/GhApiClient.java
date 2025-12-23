@@ -1,7 +1,8 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.api.GhApi;
+import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;
 import lombok.SneakyThrows;
 

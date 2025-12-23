@@ -1,10 +1,12 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.impl;
 
 import com.google.common.base.Stopwatch;
 import guru.qa.niffler.api.UserdataApi;
 import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.FriendshipStatus;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.service.RestClient;
+import guru.qa.niffler.service.UsersClient;
 import guru.qa.niffler.utils.RandomDataUtils;
 import io.qameta.allure.Step;
 import org.eclipse.jetty.http.HttpStatus;

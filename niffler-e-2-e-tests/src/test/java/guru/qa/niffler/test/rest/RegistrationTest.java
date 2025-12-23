@@ -1,7 +1,7 @@
 package guru.qa.niffler.test.rest;
 
 import guru.qa.niffler.jupiter.annotation.DisabledByIssue;
-import guru.qa.niffler.service.AuthApiClient;
+import guru.qa.niffler.service.impl.AuthApiClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import retrofit2.Response;
