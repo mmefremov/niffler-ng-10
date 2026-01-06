@@ -8,6 +8,8 @@ import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.text;
@@ -32,6 +34,16 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
 
     public SpendingTable() {
         super($("#spendings"));
+    }
+
+    public Map<String, Double> getSpendingCategoriesWithAmounts() {
+        return spendingRows.stream()
+                .collect(Collectors.groupingBy(row -> row.find("td", 1).text(),
+                                               Collectors.summingDouble(row -> {
+                                                   String td = row.find("td", 2).text();
+                                                   return Double.valueOf(td.split(" ")[0]);
+                                               }))
+                );
     }
 
     @Step("Select period")
