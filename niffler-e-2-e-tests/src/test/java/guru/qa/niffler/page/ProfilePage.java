@@ -2,24 +2,33 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$x;
 import static com.codeborne.selenide.Selenide.$x;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ParametersAreNonnullByDefault
 public class ProfilePage extends BasePage<ProfilePage> {
 
     public static final String URL = CFG.frontUrl() + "profile";
 
+    private final SelenideElement avatarIcon = $(".MuiAvatar-circular");
+
     private final SelenideElement nameInput = $("#name");
+
+    private final SelenideElement uploadNewPictureInput = $("#image__input");
 
     private final SelenideElement saveChangesButton = $("button[type='submit']");
 
@@ -41,6 +50,13 @@ public class ProfilePage extends BasePage<ProfilePage> {
     @Step("Set name {name}")
     public ProfilePage setNewName(String name) {
         nameInput.setValue(name);
+        return this;
+    }
+
+    @Nonnull
+    @Step("Set new avatar")
+    public ProfilePage setNewAvatar(String path) {
+        uploadNewPictureInput.uploadFromClasspath(path);
         return this;
     }
 
@@ -89,6 +105,14 @@ public class ProfilePage extends BasePage<ProfilePage> {
         archivedCategories.find(text(category))
                 .find(unarchiveCategoryButtonSelector).click();
         unarchiveConfirmationButton.click();
+        return this;
+    }
+
+    @Nonnull
+    @Step("Check that the avatar is updated")
+    public ProfilePage checkThatAvatarIsUpdated(BufferedImage expected) throws IOException {
+        BufferedImage actual = ImageIO.read(avatarIcon.screenshot());
+        assertFalse(new ScreenDiffResult(actual, expected));
         return this;
     }
 }

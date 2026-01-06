@@ -26,6 +26,10 @@ public class ScreenDiffResult implements BooleanSupplier {
 
     @Override
     public boolean getAsBoolean() {
+        if (ScreenShotTestExtension.isRewriteExpected()) {
+            ScreenShotTestExtension.setActual(actual);
+            return false;
+        }
         if (hasDiff) {
             ScreenShotTestExtension.setExpected(expected);
             ScreenShotTestExtension.setActual(actual);

@@ -22,7 +22,7 @@ public abstract class BasePage<T extends BasePage<?>> {
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    @Step("Check that alert message appears: {expectedText}")
+    @Step("Check that alert message appears: {text}")
     public T checkAlert(String text) {
         alert.shouldHave(text(text));
         return (T) this;
