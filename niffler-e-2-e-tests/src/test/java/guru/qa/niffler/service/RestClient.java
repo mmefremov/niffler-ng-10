@@ -2,6 +2,7 @@ package guru.qa.niffler.service;
 
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
+import io.qameta.allure.okhttp3.AllureOkHttp3;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -58,6 +59,9 @@ public abstract class RestClient {
         }
 
         clientBuilder
+                .addNetworkInterceptor(new AllureOkHttp3()
+                                               .setRequestTemplate("request-attachment.ftl")
+                                               .setResponseTemplate("response-attachment.ftl"))
                 .addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(level))
                 .cookieJar(
                         new JavaNetCookieJar(
