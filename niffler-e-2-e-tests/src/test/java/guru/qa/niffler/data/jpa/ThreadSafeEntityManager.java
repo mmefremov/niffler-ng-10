@@ -41,6 +41,7 @@ public class ThreadSafeEntityManager implements EntityManager {
         emf = delegate.getEntityManagerFactory();
     }
 
+    @Nonnull
     private EntityManager threadEm() {
         if (threadEm.get() == null || !threadEm.get().isOpen()) {
             threadEm.set(emf.createEntityManager());
@@ -92,13 +93,13 @@ public class ThreadSafeEntityManager implements EntityManager {
     }
 
     @Override
-    public <T> T find(Class<T> aClass, Object o, FindOption... findOptions) {
-        return threadEm().find(aClass, o, findOptions);
+    public <T> T find(Class<T> entityClass, Object primaryKey, FindOption... options) {
+        return threadEm().find(entityClass, primaryKey, options);
     }
 
     @Override
-    public <T> T find(EntityGraph<T> entityGraph, Object o, FindOption... findOptions) {
-        return threadEm().find(entityGraph, o, findOptions);
+    public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {
+        return threadEm().find(entityGraph, primaryKey, options);
     }
 
     @Override
@@ -107,8 +108,8 @@ public class ThreadSafeEntityManager implements EntityManager {
     }
 
     @Override
-    public <T> T getReference(T t) {
-        return threadEm().getReference(t);
+    public <T> T getReference(T entity) {
+        return threadEm().getReference(entity);
     }
 
     @Override
@@ -137,8 +138,8 @@ public class ThreadSafeEntityManager implements EntityManager {
     }
 
     @Override
-    public void lock(Object o, LockModeType lockModeType, LockOption... lockOptions) {
-
+    public void lock(Object entity, LockModeType lockMode, LockOption... options) {
+        threadEm().lock(entity, lockMode, options);
     }
 
     @Override
@@ -162,8 +163,8 @@ public class ThreadSafeEntityManager implements EntityManager {
     }
 
     @Override
-    public void refresh(Object o, RefreshOption... refreshOptions) {
-
+    public void refresh(Object entity, RefreshOption... options) {
+        threadEm().refresh(entity, options);
     }
 
     @Override
@@ -188,12 +189,12 @@ public class ThreadSafeEntityManager implements EntityManager {
 
     @Override
     public void setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
-
+        threadEm().setCacheRetrieveMode(cacheRetrieveMode);
     }
 
     @Override
     public void setCacheStoreMode(CacheStoreMode cacheStoreMode) {
-
+        threadEm().setCacheStoreMode(cacheStoreMode);
     }
 
     @Override
@@ -227,17 +228,17 @@ public class ThreadSafeEntityManager implements EntityManager {
     }
 
     @Override
-    public <T> TypedQuery<T> createQuery(CriteriaSelect<T> criteriaSelect) {
-        return threadEm().createQuery(criteriaSelect);
+    public <T> TypedQuery<T> createQuery(CriteriaSelect<T> selectQuery) {
+        return threadEm().createQuery(selectQuery);
     }
 
     @Override
-    public Query createQuery(CriteriaUpdate updateQuery) {
+    public Query createQuery(CriteriaUpdate<?> updateQuery) {
         return threadEm().createQuery(updateQuery);
     }
 
     @Override
-    public Query createQuery(CriteriaDelete deleteQuery) {
+    public Query createQuery(CriteriaDelete<?> deleteQuery) {
         return threadEm().createQuery(deleteQuery);
     }
 
@@ -257,8 +258,8 @@ public class ThreadSafeEntityManager implements EntityManager {
     }
 
     @Override
-    public <T> TypedQuery<T> createQuery(TypedQueryReference<T> typedQueryReference) {
-        return threadEm().createQuery(typedQueryReference);
+    public <T> TypedQuery<T> createQuery(TypedQueryReference<T> reference) {
+        return threadEm().createQuery(reference);
     }
 
     @Override
@@ -267,7 +268,7 @@ public class ThreadSafeEntityManager implements EntityManager {
     }
 
     @Override
-    public Query createNativeQuery(String sqlString, Class resultClass) {
+    public <T> Query createNativeQuery(String sqlString, Class<T> resultClass) {
         return threadEm().createNativeQuery(sqlString, resultClass);
     }
 
@@ -287,7 +288,7 @@ public class ThreadSafeEntityManager implements EntityManager {
     }
 
     @Override
-    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class... resultClasses) {
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class<?>... resultClasses) {
         return threadEm().createStoredProcedureQuery(procedureName, resultClasses);
     }
 
@@ -362,12 +363,12 @@ public class ThreadSafeEntityManager implements EntityManager {
     }
 
     @Override
-    public <C> void runWithConnection(ConnectionConsumer<C> connectionConsumer) {
-
+    public <C> void runWithConnection(ConnectionConsumer<C> action) {
+        threadEm().runWithConnection(action);
     }
 
     @Override
-    public <C, T> T callWithConnection(ConnectionFunction<C, T> connectionFunction) {
-        return threadEm().callWithConnection(connectionFunction);
+    public <C, T> T callWithConnection(ConnectionFunction<C, T> function) {
+        return threadEm().callWithConnection(function);
     }
 }

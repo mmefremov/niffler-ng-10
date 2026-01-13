@@ -6,6 +6,7 @@ import io.qameta.allure.model.TestResult;
 import lombok.SneakyThrows;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -23,16 +24,24 @@ public class AllureBackendLogsExtension implements SuiteExtension {
         allureLifecycle.scheduleTestCase(new TestResult().setUuid(caseId).setName(CASE_NAME));
         allureLifecycle.startTestCase(caseId);
 
-        allureLifecycle.addAttachment(
-                "Niffler-auth log",
-                "text/html",
-                ".log",
-                Files.newInputStream(
-                        Path.of("./logs/niffler-auth/app.log")
-                )
-        );
+        attachServiceLogs(allureLifecycle, "niffler-auth");
+        attachServiceLogs(allureLifecycle, "niffler-currency");
+        attachServiceLogs(allureLifecycle, "niffler-gateway");
+        attachServiceLogs(allureLifecycle, "niffler-spend");
+        attachServiceLogs(allureLifecycle, "niffler-userdata");
 
         allureLifecycle.stopTestCase(caseId);
         allureLifecycle.writeTestCase(caseId);
+    }
+
+    private void attachServiceLogs(AllureLifecycle allureLifecycle, String serviceName) throws IOException {
+        allureLifecycle.addAttachment(
+                "%s log".formatted(serviceName),
+                "text/html",
+                ".log",
+                Files.newInputStream(
+                        Path.of("./logs/%s/app.log".formatted(serviceName))
+                )
+        );
     }
 }

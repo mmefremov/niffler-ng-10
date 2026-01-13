@@ -5,6 +5,8 @@ import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.model.allure.ScreenDif;
 import io.qameta.allure.Allure;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -17,11 +19,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
 @ParametersAreNonnullByDefault
-public class ScreenShotTestExtension implements ParameterResolver, TestExecutionExceptionHandler {
+public class ScreenShotTestExtension implements BeforeEachCallback, AfterEachCallback, ParameterResolver, TestExecutionExceptionHandler {
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ScreenShotTestExtension.class);
 
@@ -29,6 +32,31 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
 
     private static final Base64.Encoder encoder = Base64.getEncoder();
 
+    @Override
+    public void beforeEach(ExtensionContext context) {
+        AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), ScreenShotTest.class)
+                .ifPresent(anno -> {
+                    context.getStore(NAMESPACE).put("value", anno.value());
+                    context.getStore(NAMESPACE).put("rewriteExpected", anno.rewriteExpected());
+                });
+    }
+
+    @Override
+    public void afterEach(ExtensionContext context) {
+        AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), ScreenShotTest.class)
+                .ifPresent(anno -> {
+                    if (anno.rewriteExpected()) {
+                        BufferedImage actual = getActual();
+                        try {
+                            File newExpected = new ClassPathResource(anno.value()).getFile();
+                            boolean png = ImageIO.write(actual, "png", newExpected);
+                            System.out.println(png);
+                        } catch (IOException e) {
+                            throw new RuntimeException("Can't write actual image", e);
+                        }
+                    }
+                });
+    }
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         return AnnotationSupport.isAnnotated(extensionContext.getRequiredTestMethod(), ScreenShotTest.class) &&
@@ -38,22 +66,28 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
     @SneakyThrows
     @Override
     public BufferedImage resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return ImageIO.read(new ClassPathResource("img/expected-stat.png").getInputStream());
+        return ImageIO.read(
+                new ClassPathResource(
+                        extensionContext.getStore(NAMESPACE).get("value", String.class)
+                ).getInputStream()
+        );
     }
 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        ScreenDif screenDif = new ScreenDif(
-                "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
-                "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
-                "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
-        );
+        if (getExpected() != null && getActual() != null) {
+            ScreenDif screenDif = new ScreenDif(
+                    "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
+                    "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
+                    "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
+            );
 
-        Allure.addAttachment(
-                "Screenshot diff",
-                "application/vnd.allure.image.diff",
-                objectMapper.writeValueAsString(screenDif)
-        );
+            Allure.addAttachment(
+                    "Screenshot diff",
+                    "application/vnd.allure.image.diff",
+                    objectMapper.writeValueAsString(screenDif)
+            );
+        }
         throw throwable;
     }
 
@@ -79,6 +113,10 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
 
     public static BufferedImage getDiff() {
         return TestMethodContextExtension.context().getStore(NAMESPACE).get("diff", BufferedImage.class);
+    }
+
+    public static boolean isRewriteExpected() {
+        return TestMethodContextExtension.context().getStore(NAMESPACE).get("rewriteExpected", Boolean.class);
     }
 
     private static byte[] imageToBytes(BufferedImage image) {
