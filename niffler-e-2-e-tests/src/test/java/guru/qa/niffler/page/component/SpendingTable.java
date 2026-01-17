@@ -11,8 +11,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.ClickOptions.usingJavaScript;
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
@@ -23,6 +25,8 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
     private final SelenideElement periodInput = self.$("#period");
 
     private final SelenideElement deleteButton = self.$("#delete");
+
+    private final SelenideElement popup = $("div[role='dialog']");
 
     private final By editButton = By.cssSelector("button");
 
@@ -65,6 +69,7 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
         searchSpendingByDescription(description);
         spendingRows.first().find(checkboxButton).click();
         deleteButton.click();
+        popup.find(byText("Delete")).click(usingJavaScript());
         return this;
     }
 

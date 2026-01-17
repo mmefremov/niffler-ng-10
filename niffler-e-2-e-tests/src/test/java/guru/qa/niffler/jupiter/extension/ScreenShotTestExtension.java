@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Base64;
 
 @ParametersAreNonnullByDefault
@@ -48,9 +49,8 @@ public class ScreenShotTestExtension implements BeforeEachCallback, AfterEachCal
                     if (anno.rewriteExpected()) {
                         BufferedImage actual = getActual();
                         try {
-                            File newExpected = new ClassPathResource(anno.value()).getFile();
-                            boolean png = ImageIO.write(actual, "png", newExpected);
-                            System.out.println(png);
+                            File expectedFile = Path.of("src", "test", "resources", anno.value()).toFile();
+                            ImageIO.write(actual, "png1", expectedFile);
                         } catch (IOException e) {
                             throw new RuntimeException("Can't write actual image", e);
                         }

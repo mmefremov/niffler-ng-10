@@ -3,6 +3,7 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.page.component.SpendingTable;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static guru.qa.niffler.condition.StatConditions.color;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,6 +32,8 @@ public class MainPage extends BasePage<MainPage> {
 
     private final SelenideElement chart = $("#chart canvas");
 
+    private final ElementsCollection bubbles = $$("#legend-container li");
+
     private final ElementsCollection legendTable = $$("#legend-container ul li");
 
     private final SpendingTable spendingTable = new SpendingTable();
@@ -37,7 +41,8 @@ public class MainPage extends BasePage<MainPage> {
     @Nonnull
     @Step("Check that page loaded")
     public MainPage checkThatPageLoaded() {
-        statistics.shouldBe(visible);
+        statistics.shouldBeVisible();
+        spendingTable.shouldBeVisible();
         return this;
     }
 
@@ -70,6 +75,13 @@ public class MainPage extends BasePage<MainPage> {
                 assertThat(spendingSummary.get(categoryName)).as("category amount").isCloseTo(spendingsSum, within(0.01));
             }
         }
+        return this;
+    }
+
+    @Step("Check that stat bubbles contains colors: {expectedColors}")
+    @Nonnull
+    public MainPage checkBubbles(Color... expectedColors) {
+        bubbles.should(color(expectedColors));
         return this;
     }
 

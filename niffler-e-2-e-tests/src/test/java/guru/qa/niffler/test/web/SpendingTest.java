@@ -1,6 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
@@ -10,7 +11,6 @@ import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.utils.RandomDataUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
@@ -92,11 +92,10 @@ public class SpendingTest {
                 .checkLegendList();
     }
 
-    @Disabled("IllegalStateException: This method needs a transaction for the calling thread and none exists")
     @User(
             spendings = {
                     @Spending(
-                            category = "Обучение",
+                            category = "Обучение архив",
                             description = "Обучение Advanced 1.0",
                             amount = 79990
                     ),
@@ -114,10 +113,10 @@ public class SpendingTest {
                 .checkThatPageLoaded()
                 .deleteSpending("Обучение Advanced 1.0")
                 .checkChartImage(expected)
-                .checkLegendList();
+                .checkLegendList()
+                .checkBubbles(Color.yellow);
     }
 
-    @Disabled("IllegalStateException: This method needs a transaction for the calling thread and none exists")
     @User(
             categories = @Category(
                     name = "Обучение архив",
@@ -135,6 +134,7 @@ public class SpendingTest {
                 .login(user.username(), user.testData().password())
                 .checkThatPageLoaded()
                 .checkChartImage(expected)
-                .checkLegendList();
+                .checkLegendList()
+                .checkBubbles(Color.yellow, Color.green);
     }
 }

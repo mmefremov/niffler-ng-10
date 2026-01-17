@@ -3,11 +3,12 @@ package guru.qa.niffler.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public record CategoryJson(
         @JsonProperty("id")
-        UUID id,
+        @Nullable UUID id,
         @JsonProperty("name")
         String name,
         @JsonProperty("username")
