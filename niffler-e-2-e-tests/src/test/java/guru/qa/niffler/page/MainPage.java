@@ -1,16 +1,14 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.condition.Color;
+import guru.qa.niffler.model.Bubble;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.component.SpendingTable;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
@@ -27,14 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class MainPage extends BasePage<MainPage> {
 
     public static final String URL = CFG.frontUrl() + "main";
-    
-    private final SelenideElement statistics = $("#stat");
 
-    private final SelenideElement chart = $("#chart canvas");
-
-    private final ElementsCollection bubbles = $$("#legend-container li");
-
-    private final ElementsCollection legendTable = $$("#legend-container ul li");
+    private final Statistics statistics = new Statistics();
 
     private final SpendingTable spendingTable = new SpendingTable();
 
@@ -47,11 +39,35 @@ public class MainPage extends BasePage<MainPage> {
     }
 
     @Nonnull
-    @Step("Check the chart image")
     public MainPage checkChartImage(BufferedImage expected) throws IOException {
-        Selenide.sleep(2000);
-        BufferedImage actual = ImageIO.read(chart.screenshot());
-        assertFalse(new ScreenDiffResult(actual, expected));
+        statistics.checkChartImage(expected);
+        return this;
+    }
+
+    @Nonnull
+    @Step("Check the legend list")
+    public MainPage checkLegendList(List<SpendJson> spendings) {
+        List<String> legendList = spendings.stream()
+                .collect(Collectors.groupingBy(
+                        (SpendJson spend) -> spend.category().archived() ? "Archived" : spend.category().name(),
+                        Collectors.mapping(
+                                (SpendJson spend) -> BigDecimal.valueOf(spend.amount()),
+                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))))
+                .entrySet().stream()
+                .sorted((e1, e2) -> {
+                    if ("Archived".equals(e1.getKey())) {
+                        return 1;
+                    }
+                    return e2.getValue().compareTo(e1.getValue());
+                })
+                .map(entry -> "%s %s ₽".formatted(
+                        entry.getKey(), entry.getValue().stripTrailingZeros().toPlainString()))
+                .toList();
+        Color[] colors = Color.values();
+        Bubble[] expectedBubbles = legendList.stream()
+                .map(legend -> new Bubble(colors[legendList.indexOf(legend)], legend))
+                .toArray(Bubble[]::new);
+        statistics.checkBubbles(expectedBubbles);
         return this;
     }
 
@@ -59,29 +75,7 @@ public class MainPage extends BasePage<MainPage> {
     @Step("Check the legend list")
     public MainPage checkLegendList() {
         var spendingSummary = spendingTable.getSpendingCategoriesWithAmounts();
-        double spendingsSum = spendingSummary.values().stream()
-                .reduce(0.0, (a, b) -> a + b);
-
-        for (SelenideElement legend : legendTable) {
-            String[] legendParts = Objects.requireNonNull(legend.getText()).split(" ");
-            String categoryName = legendParts[0];
-            double categoryAmount = Double.valueOf(legendParts[1]);
-
-            if (!"Archived".equals(categoryName)) {
-                assertThat(spendingSummary).as("category name").containsKey(categoryName);
-                assertThat(spendingSummary.get(categoryName)).as("category amount").isCloseTo(categoryAmount, within(0.01));
-                spendingsSum -= categoryAmount;
-            } else {
-                assertThat(spendingSummary.get(categoryName)).as("category amount").isCloseTo(spendingsSum, within(0.01));
-            }
-        }
-        return this;
-    }
-
-    @Step("Check that stat bubbles contains colors: {expectedColors}")
-    @Nonnull
-    public MainPage checkBubbles(Color... expectedColors) {
-        bubbles.should(color(expectedColors));
+        statistics.checkBubbles(spendingSummary);
         return this;
     }
 
