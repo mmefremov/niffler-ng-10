@@ -4,7 +4,7 @@ import com.codeborne.selenide.CheckResult;
 import com.codeborne.selenide.Driver;
 import com.codeborne.selenide.WebElementCondition;
 import com.codeborne.selenide.WebElementsCondition;
-import org.apache.commons.lang3.ArrayUtils;
+import guru.qa.niffler.model.Bubble;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.WebElement;
 
@@ -21,62 +21,63 @@ import static com.codeborne.selenide.CheckResult.rejected;
 public class StatConditions {
 
     @Nonnull
-    public static WebElementCondition color(Color expectedColor) {
-        return new WebElementCondition("color " + expectedColor.rgb) {
+    public static WebElementCondition statBubbles(Bubble expectedBubble) {
+        return new WebElementCondition("bubble " + expectedBubble) {
             @NotNull
             @Override
             public CheckResult check(Driver driver, WebElement element) {
-                final String rgba = element.getCssValue("background-color");
+                final String color = element.getCssValue("background-color");
+                final String text = element.getText();
                 return new CheckResult(
-                        expectedColor.rgb.equals(rgba),
-                        rgba
+                        expectedBubble.color().rgba.equals(color) && expectedBubble.text().equals(text),
+                        color
                 );
             }
         };
     }
 
     @Nonnull
-    public static WebElementsCondition color(@Nonnull Color... expectedColors) {
+    public static WebElementsCondition statBubbles(Bubble... expectedBubbles) {
         return new WebElementsCondition() {
 
-            private final String expectedRgba = Arrays.stream(expectedColors).map(c -> c.rgb).toList().toString();
+            private final List<Bubble> expectedBubbleList = List.of(expectedBubbles);
 
             @NotNull
             @Override
             public CheckResult check(Driver driver, List<WebElement> elements) {
-                if (ArrayUtils.isEmpty(expectedColors)) {
-                    throw new IllegalArgumentException("No expected colors given");
+                if (expectedBubbleList.isEmpty()) {
+                    throw new IllegalArgumentException("No expected bubbles given");
                 }
-                if (expectedColors.length != elements.size()) {
-                    final String message = String.format("List size mismatch (expected: %s, actual: %s)", expectedColors.length, elements.size());
+                if (expectedBubbleList.size() != elements.size()) {
+                    String message = String.format("List size mismatch (expected: %s, actual: %s)",
+                                                   expectedBubbleList.size(), elements.size());
                     return rejected(message, elements);
                 }
-
+                List<Bubble> actualBubbleList = elements.stream()
+                        .map(element -> {
+                            String rgba = element.getCssValue("background-color");
+                            return new Bubble(Color.getByRgba(rgba), element.getText());
+                        })
+                        .toList();
                 boolean passed = true;
-                final List<String> actualRgbaList = new ArrayList<>();
-                for (int i = 0; i < elements.size(); i++) {
-                    final WebElement elementToCheck = elements.get(i);
-                    final Color colorToCheck = expectedColors[i];
-                    final String rgba = elementToCheck.getCssValue("background-color");
-                    actualRgbaList.add(rgba);
-                    if (passed) {
-                        passed = colorToCheck.rgb.equals(rgba);
-                    }
+                for (int i = 0; i < expectedBubbleList.size(); i++) {
+                    Bubble actualBubble = actualBubbleList.get(i);
+                    Bubble expectedBubble = expectedBubbleList.get(i);
+                    passed = actualBubble.equals(expectedBubble);
                 }
-
                 if (!passed) {
-                    final String actualRgba = actualRgbaList.toString();
-                    final String message = String.format(
-                            "List colors mismatch (expected: %s, actual: %s)", expectedRgba, actualRgba
+                    String message = String.format(
+                            "List bubbles mismatch (expected: %s, actual: %s)",
+                            expectedBubbleList, actualBubbleList
                     );
-                    return rejected(message, actualRgba);
+                    return rejected(message, actualBubbleList);
                 }
                 return accepted();
             }
 
             @Override
-            public String toString() {
-                return expectedRgba;
+            public @NonNull String toString() {
+                return expectedBubbleList.toString();
             }
         };
     }
