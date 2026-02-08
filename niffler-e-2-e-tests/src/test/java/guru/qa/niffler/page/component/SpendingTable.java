@@ -3,11 +3,14 @@ package guru.qa.niffler.page.component;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.DataFilterValues;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.EditSpendingPage;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -16,6 +19,7 @@ import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
+import static guru.qa.niffler.condition.SpendConditions.containSpends;
 
 @ParametersAreNonnullByDefault
 public class SpendingTable extends BaseComponent<SpendingTable> {
@@ -40,13 +44,20 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
         super($("#spendings"));
     }
 
-    public Map<String, Double> getSpendingCategoriesWithAmounts() {
+    @Step("Spends should be equal to expected ones")
+    public void checkSpends(List<SpendJson> expectedSpends) {
+        spendingRows.should(containSpends(expectedSpends));
+    }
+
+    public Map<String, BigDecimal> getSpendingCategoriesWithAmounts() {
+        searchField.clearIfNotEmpty();
         return spendingRows.stream()
-                .collect(Collectors.groupingBy(row -> row.find("td", 1).text(),
-                                               Collectors.summingDouble(row -> {
-                                                   String td = row.find("td", 2).text();
-                                                   return Double.valueOf(td.split(" ")[0]);
-                                               }))
+                .collect(Collectors.groupingBy(
+                        row -> row.find("td", 1).text(),
+                        Collectors.mapping(
+                                row -> new BigDecimal(row.find("td", 2).text().split(" ")[0]),
+                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
+                        ))
                 );
     }
 

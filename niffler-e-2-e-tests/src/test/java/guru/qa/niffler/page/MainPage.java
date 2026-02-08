@@ -4,22 +4,16 @@ import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.component.SpendingTable;
-import guru.qa.niffler.utils.ScreenDiffResult;
+import guru.qa.niffler.page.component.Statistics;
 import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Objects;
-
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static guru.qa.niffler.condition.StatConditions.color;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
 public class MainPage extends BasePage<MainPage> {
@@ -35,6 +29,12 @@ public class MainPage extends BasePage<MainPage> {
     public MainPage checkThatPageLoaded() {
         statistics.shouldBeVisible();
         spendingTable.shouldBeVisible();
+        return this;
+    }
+
+    @Nonnull
+    public MainPage checkSpends(List<SpendJson> expectedSpends) {
+        spendingTable.checkSpends(expectedSpends);
         return this;
     }
 
