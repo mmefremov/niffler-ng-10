@@ -62,7 +62,12 @@ public class SpendConditions {
                             return joiner.toString();
                         })
                         .toList();
-                boolean passed = expectedLines.containsAll(actualLines);
+                boolean passed = true;
+                for (int i = 0; i < expectedLines.size(); i++) {
+                    String expectedLine = expectedLines.get(i);
+                    String actualLine = actualLines.get(i);
+                    passed = expectedLine.equals(actualLine);
+                }
                 if (!passed) {
                     String message = String.format(
                             "List bubbles mismatch (expected: %s, actual: %s)", expectedLines, actualLines

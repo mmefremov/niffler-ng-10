@@ -67,7 +67,7 @@ public class MainPage extends BasePage<MainPage> {
         Bubble[] expectedBubbles = legendList.stream()
                 .map(legend -> new Bubble(colors[legendList.indexOf(legend)], legend))
                 .toArray(Bubble[]::new);
-        statistics.checkBubbles(expectedBubbles);
+        statistics.checkBubblesInAnyOrder(expectedBubbles);
         return this;
     }
 
@@ -75,7 +75,7 @@ public class MainPage extends BasePage<MainPage> {
     @Step("Check the legend list")
     public MainPage checkLegendList() {
         var spendingSummary = spendingTable.getSpendingCategoriesWithAmounts();
-        statistics.checkBubbles(spendingSummary);
+        statistics.checkBubblesInAnyOrder(spendingSummary);
         return this;
     }
 

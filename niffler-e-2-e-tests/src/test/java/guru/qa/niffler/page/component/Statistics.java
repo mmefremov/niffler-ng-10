@@ -43,12 +43,12 @@ public class Statistics extends BaseComponent<Statistics> {
     }
 
     @Step("Check that stat bubbles contains colors: {expectedBubbles}")
-    public void checkBubbles(Bubble... expectedBubbles) {
+    public void checkBubblesInAnyOrder(Bubble... expectedBubbles) {
         bubbles.should(statBubbles(expectedBubbles));
     }
 
     @Step("Check that stat bubbles contains bubble in any order")
-    public void checkBubbles(Map<String, BigDecimal> spendingSummary) {
+    public void checkBubblesInAnyOrder(Map<String, BigDecimal> spendingSummary) {
         List<String> currentCategories = legendTable.stream()
                 .map(legend -> legend.getText().split(" ")[0])
                 .toList();
