@@ -1,6 +1,7 @@
 package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
@@ -14,33 +15,39 @@ import java.util.Locale;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class Calendar extends BaseComponent<Calendar> {
 
     private final SelenideElement calendarButton = self.find("button");
 
-    private final SelenideElement dateCalendar = $(".MuiDateCalendar-root");
+    private final SelenideElement dateCalendar;
 
-    private final SelenideElement currentYearMonth = dateCalendar.find(".MuiPickersCalendarHeader-label");
+    private final SelenideElement currentYearMonth;
 
-    private final SelenideElement yearViewButton = dateCalendar.find(".MuiPickersCalendarHeader-switchViewButton");
+    private final SelenideElement yearViewButton;
 
-    private final SelenideElement previousMonthButton = dateCalendar.find("button[title='Previous month']");
+    private final SelenideElement previousMonthButton;
 
-    private final SelenideElement nextMonthButton = dateCalendar.find("button[title='Next month']");
+    private final SelenideElement nextMonthButton;
 
-    private final ElementsCollection yearCalendarList = dateCalendar.find(".MuiYearCalendar-root")
-            .findAll("button");
+    private final ElementsCollection yearCalendarList;
 
-    private final ElementsCollection dayCalendarList = dateCalendar.find(".MuiDayCalendar-monthContainer")
-            .findAll("button");
+    private final ElementsCollection dayCalendarList;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH);
 
-    public Calendar() {
-        super($(".MuiInputBase-adornedEnd"));
+    public Calendar(SelenideDriver driver) {
+        super(driver, driver.$(".MuiInputBase-adornedEnd"));
+        dateCalendar = driver.$(".MuiDateCalendar-root");
+        currentYearMonth = dateCalendar.find(".MuiPickersCalendarHeader-label");
+        yearViewButton = dateCalendar.find(".MuiPickersCalendarHeader-switchViewButton");
+        previousMonthButton = dateCalendar.find("button[title='Previous month']");
+        nextMonthButton = dateCalendar.find("button[title='Next month']");
+        yearCalendarList = dateCalendar.find(".MuiYearCalendar-root")
+                .findAll("button");
+        dayCalendarList = dateCalendar.find(".MuiDayCalendar-monthContainer")
+                .findAll("button");
     }
 
     @Step("Select date '{date}' in calendar")

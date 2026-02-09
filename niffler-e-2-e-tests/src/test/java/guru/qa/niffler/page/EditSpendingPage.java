@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.Calendar;
 import io.qameta.allure.Step;
@@ -8,22 +9,29 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Date;
 
-import static com.codeborne.selenide.Selenide.$;
-
 @ParametersAreNonnullByDefault
 public class EditSpendingPage extends BasePage<EditSpendingPage> {
 
     public static final String URL = CFG.frontUrl() + "spending";
 
-    private final SelenideElement amountInput = $("#amount");
+    private final SelenideElement amountInput;
 
-    private final SelenideElement categoryInput = $("#category");
+    private final SelenideElement categoryInput;
 
-    private final SelenideElement descriptionInput = $("#description");
+    private final SelenideElement descriptionInput;
 
-    private final SelenideElement saveBtn = $("#save");
+    private final SelenideElement saveBtn;
 
-    private final Calendar calendar = new Calendar();
+    private final Calendar calendar;
+
+    public EditSpendingPage(SelenideDriver driver) {
+        super(driver);
+        amountInput = driver.$("#amount");
+        categoryInput = driver.$("#category");
+        descriptionInput = driver.$("#description");
+        saveBtn = driver.$("#save");
+        calendar = new Calendar(driver);
+    }
 
     @Nonnull
     @Step("Set new spending description")
@@ -57,6 +65,6 @@ public class EditSpendingPage extends BasePage<EditSpendingPage> {
     @Step("Save spending")
     public MainPage saveSpending() {
         saveBtn.click();
-        return new MainPage();
+        return new MainPage(driver);
     }
 }

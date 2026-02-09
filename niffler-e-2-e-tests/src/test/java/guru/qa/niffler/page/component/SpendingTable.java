@@ -1,6 +1,7 @@
 package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.DataFilterValues;
 import guru.qa.niffler.model.SpendJson;
@@ -24,24 +25,32 @@ import static guru.qa.niffler.condition.SpendConditions.containSpends;
 @ParametersAreNonnullByDefault
 public class SpendingTable extends BaseComponent<SpendingTable> {
 
-    private final SearchField searchField = new SearchField();
+    private final SearchField searchField;
 
-    private final SelenideElement periodInput = self.$("#period");
+    private final SelenideElement periodInput;
 
-    private final SelenideElement deleteButton = self.$("#delete");
+    private final SelenideElement deleteButton;
 
-    private final SelenideElement popup = $("div[role='dialog']");
+    private final SelenideElement popup;
 
-    private final By editButton = By.cssSelector("button");
+    private final By editButton;
 
-    private final By checkboxButton = By.cssSelector(".PrivateSwitchBase-input");
+    private final By checkboxButton;
 
-    private final ElementsCollection periodList = self.$$(".MuiMenu-list");
+    private final ElementsCollection periodList;
 
-    private final ElementsCollection spendingRows = self.$("tbody").$$("tr");
+    private final ElementsCollection spendingRows;
 
-    public SpendingTable() {
-        super($("#spendings"));
+    public SpendingTable(SelenideDriver driver) {
+        super(driver, driver.$("#spendings"));
+        searchField = new SearchField(driver);
+        periodInput = self.$("#period");
+        deleteButton = self.$("#delete");
+        popup = $("div[role='dialog']");
+        editButton = By.cssSelector("button");
+        checkboxButton = By.cssSelector(".PrivateSwitchBase-input");
+        periodList = self.$$(".MuiMenu-list");
+        spendingRows = self.$("tbody").$$("tr");
     }
 
     @Step("Spends should be equal to expected ones")
@@ -72,7 +81,7 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
     public EditSpendingPage editSpending(String description) {
         searchSpendingByDescription(description);
         spendingRows.first().find(editButton).click();
-        return new EditSpendingPage();
+        return new EditSpendingPage(driver);
     }
 
     @Step("Delete spending '{description}'")

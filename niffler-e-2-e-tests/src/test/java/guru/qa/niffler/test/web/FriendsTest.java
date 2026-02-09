@@ -1,17 +1,24 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideDriver;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.extension.NonStaticBrowserExtension;
 import guru.qa.niffler.jupiter.extension.UsersQueueExtension;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.utils.SelenideUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@ExtendWith({BrowserExtension.class, UsersQueueExtension.class})
+@ExtendWith({UsersQueueExtension.class})
 class FriendsTest {
+
+    @RegisterExtension
+    private static final NonStaticBrowserExtension nonStaticBrowserExtension = new NonStaticBrowserExtension();
+
+    private static final SelenideDriver driver = new SelenideDriver(SelenideUtils.getChromeConfig());
 
     @User(
             friends = 1
@@ -19,7 +26,10 @@ class FriendsTest {
     @Test
     @DisplayName("Таблица друзей содержит друга")
     void friendShouldBePresentInFriendsTable(UserJson user) {
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .friendsTableShouldContainFriend(user.testData().friends().getFirst().username());
@@ -29,7 +39,10 @@ class FriendsTest {
     @Test
     @DisplayName("Таблица друзей пустая")
     void friendsTableShouldBeEmptyForNewUser(UserJson user) {
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .friendsTableShouldBeEmpty();
@@ -41,7 +54,10 @@ class FriendsTest {
     @Test
     @DisplayName("Таблица друзей содержит входящий запрос")
     void incomeInvitationBePresentInFriendsTable(UserJson user) {
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .requestsTableShouldContainIncomeFriend(user.testData().incomeInvitations().getFirst().username());
@@ -53,7 +69,10 @@ class FriendsTest {
     @Test
     @DisplayName("Список всех людей содержит исходящий запрос")
     void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .openPeopleTab()
@@ -67,7 +86,10 @@ class FriendsTest {
     @DisplayName("Прием заявки в друзья")
     void acceptIncomeInvitation(UserJson user) {
         String friendName = user.testData().incomeInvitations().getFirst().username();
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .requestsTableShouldContainIncomeFriend(friendName)
@@ -83,7 +105,10 @@ class FriendsTest {
     @DisplayName("Отклонение заявки в друзья")
     void declineIncomeInvitation(UserJson user) {
         String friendName = user.testData().incomeInvitations().getFirst().username();
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openFriends()
                 .requestsTableShouldContainIncomeFriend(friendName)

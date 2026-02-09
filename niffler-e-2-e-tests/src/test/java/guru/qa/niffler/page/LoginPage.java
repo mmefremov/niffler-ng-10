@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
@@ -7,22 +8,30 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.codeborne.selenide.Condition.ownText;
-import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class LoginPage extends BasePage<LoginPage> {
 
     public static final String URL = CFG.authUrl() + "login";
 
-    private final SelenideElement usernameInput = $("#username");
+    private final SelenideElement usernameInput;
 
-    private final SelenideElement passwordInput = $("#password");
+    private final SelenideElement passwordInput;
 
-    private final SelenideElement submitButton = $("#login-button");
+    private final SelenideElement submitButton;
 
-    private final SelenideElement registerButton = $("#register-button");
+    private final SelenideElement registerButton;
 
-    private final SelenideElement formError = $(".form__error");
+    private final SelenideElement formError;
+
+    public LoginPage(SelenideDriver driver) {
+        super(driver);
+        usernameInput = driver.$("#username");
+        passwordInput = driver.$("#password");
+        submitButton = driver.$("#login-button");
+        registerButton = driver.$("#register-button");
+        formError = driver.$(".form__error");
+    }
 
     @Nonnull
     @Step("Login as '{username}' with password '{password}'")
@@ -30,7 +39,7 @@ public class LoginPage extends BasePage<LoginPage> {
         usernameInput.setValue(username);
         passwordInput.setValue(password);
         submitButton.click();
-        return new MainPage();
+        return new MainPage(driver);
     }
 
     @Nonnull
@@ -39,14 +48,14 @@ public class LoginPage extends BasePage<LoginPage> {
         usernameInput.setValue(username);
         passwordInput.setValue(password);
         submitButton.click();
-        return new LoginPage();
+        return new LoginPage(driver);
     }
 
     @Nonnull
     @Step("Click register button")
     public RegisterPage register() {
         registerButton.click();
-        return new RegisterPage();
+        return new RegisterPage(driver);
     }
 
     @Nonnull

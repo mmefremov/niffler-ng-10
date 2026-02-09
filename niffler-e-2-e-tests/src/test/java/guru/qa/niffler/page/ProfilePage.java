@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
@@ -14,9 +15,6 @@ import java.io.IOException;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$x;
-import static com.codeborne.selenide.Selenide.$x;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ParametersAreNonnullByDefault
@@ -24,27 +22,42 @@ public class ProfilePage extends BasePage<ProfilePage> {
 
     public static final String URL = CFG.frontUrl() + "profile";
 
-    private final SelenideElement avatarIcon = $(".MuiAvatar-circular");
+    private final SelenideElement avatarIcon;
 
-    private final SelenideElement nameInput = $("#name");
+    private final SelenideElement nameInput;
 
-    private final SelenideElement uploadNewPictureInput = $("#image__input");
+    private final SelenideElement uploadNewPictureInput;
 
-    private final SelenideElement saveChangesButton = $("button[type='submit']");
+    private final SelenideElement saveChangesButton;
 
-    private final SelenideElement showArchivedCheckbox = $(".PrivateSwitchBase-input");
+    private final SelenideElement showArchivedCheckbox;
 
-    private final ElementsCollection activeCategories = $$x("//div[./div[contains(@class,'MuiChip-colorPrimary')]]");
+    private final ElementsCollection activeCategories;
 
-    private final ElementsCollection archivedCategories = $$x("//div[./div[contains(@class,'MuiChip-colorDefault')]]");
+    private final ElementsCollection archivedCategories;
 
-    private final By archiveCategoryButtonSelector = By.cssSelector("[aria-label='Archive category']");
+    private final By archiveCategoryButtonSelector;
 
-    private final By unarchiveCategoryButtonSelector = By.cssSelector("[aria-label='Unarchive category']");
+    private final By unarchiveCategoryButtonSelector;
 
-    private final SelenideElement archiveConfirmationButton = $x("//button[text()='Archive']");
+    private final SelenideElement archiveConfirmationButton;
 
-    private final SelenideElement unarchiveConfirmationButton = $x("//button[text()='Unarchive']");
+    private final SelenideElement unarchiveConfirmationButton;
+
+    public ProfilePage(SelenideDriver driver) {
+        super(driver);
+        avatarIcon = driver.$(".MuiAvatar-circular");
+        nameInput = driver.$("#name");
+        uploadNewPictureInput = driver.$("#image__input");
+        saveChangesButton = driver.$("button[type='submit']");
+        showArchivedCheckbox = driver.$(".PrivateSwitchBase-input");
+        activeCategories = driver.$$x("//div[./div[contains(@class,'MuiChip-colorPrimary')]]");
+        archivedCategories = driver.$$x("//div[./div[contains(@class,'MuiChip-colorDefault')]]");
+        archiveCategoryButtonSelector = By.cssSelector("[aria-label='Archive category']");
+        unarchiveCategoryButtonSelector = By.cssSelector("[aria-label='Unarchive category']");
+        archiveConfirmationButton = driver.$x("//button[text()='Archive']");
+        unarchiveConfirmationButton = driver.$x("//button[text()='Unarchive']");
+    }
 
     @Nonnull
     @Step("Set name {name}")

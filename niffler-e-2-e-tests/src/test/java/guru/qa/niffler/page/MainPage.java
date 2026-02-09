@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.SelenideDriver;
 import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.model.SpendJson;
@@ -10,7 +11,6 @@ import io.qameta.allure.Step;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,9 +20,15 @@ public class MainPage extends BasePage<MainPage> {
 
     public static final String URL = CFG.frontUrl() + "main";
 
-    private final Statistics statistics = new Statistics();
+    private final Statistics statistics;
 
-    private final SpendingTable spendingTable = new SpendingTable();
+    private final SpendingTable spendingTable;
+
+    public MainPage(SelenideDriver driver) {
+        super(driver);
+        statistics = new Statistics(driver);
+        spendingTable = new SpendingTable(driver);
+    }
 
     @Nonnull
     @Step("Check that page loaded")
@@ -39,7 +45,7 @@ public class MainPage extends BasePage<MainPage> {
     }
 
     @Nonnull
-    public MainPage checkChartImage(BufferedImage expected) throws IOException {
+    public MainPage checkChartImage(BufferedImage expected) {
         statistics.checkChartImage(expected);
         return this;
     }

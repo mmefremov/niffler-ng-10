@@ -1,21 +1,27 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideDriver;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.jupiter.annotation.meta.WebTest;
+import guru.qa.niffler.jupiter.extension.NonStaticBrowserExtension;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.utils.RandomDataUtils;
+import guru.qa.niffler.utils.SelenideUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-@WebTest
 class ProfileTest {
+
+    @RegisterExtension
+    private static final NonStaticBrowserExtension nonStaticBrowserExtension = new NonStaticBrowserExtension();
+
+    private static final SelenideDriver driver = new SelenideDriver(SelenideUtils.getChromeConfig());
 
     @User(
             categories = @Category(archived = true)
@@ -23,7 +29,10 @@ class ProfileTest {
     @Test
     @DisplayName("Профиль содержит архивную категорию")
     void archivedCategoryShouldPresentInCategoriesList(UserJson user) {
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openProfile()
                 .showArchivedCategories()
@@ -38,7 +47,10 @@ class ProfileTest {
     @Test
     @DisplayName("Профиль содержит активную категорию")
     void activeCategoryShouldPresentInCategoriesList(UserJson user) {
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openProfile()
                 .checkActiveCategoryIsDisplayed(user.testData().categories().getFirst().name())
@@ -52,7 +64,10 @@ class ProfileTest {
     @DisplayName("Редактирование имени профиля")
     void nameShouldBeEditedInProfile(UserJson user) {
         String newName = RandomDataUtils.randomName();
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openProfile()
                 .setNewName(newName)
@@ -64,7 +79,10 @@ class ProfileTest {
     @ScreenShotTest("img/expected-avatar.png")
     @DisplayName("Смена аватара профиля")
     void avatarShouldBeUpdatedInProfile(UserJson user, BufferedImage expected) throws IOException {
-        Selenide.open(LoginPage.URL, LoginPage.class)
+        nonStaticBrowserExtension.addDriver(driver);
+        driver.open(LoginPage.URL);
+
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .openProfile()
                 .setNewAvatar("img/new-avatar.png")

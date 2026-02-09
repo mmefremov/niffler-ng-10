@@ -2,6 +2,7 @@ package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.model.Bubble;
@@ -16,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 import static guru.qa.niffler.condition.StatConditions.statBubbles;
 import static guru.qa.niffler.condition.StatConditions.statBubblesInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -25,14 +24,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @ParametersAreNonnullByDefault
 public class Statistics extends BaseComponent<Statistics> {
 
-    private final SelenideElement chart = self.find("#chart canvas");
+    private final SelenideElement chart;
 
-    private final ElementsCollection bubbles = $$("#legend-container li");
+    private final ElementsCollection bubbles;
 
-    private final ElementsCollection legendTable = $$("#legend-container ul li");
+    private final ElementsCollection legendTable;
 
-    public Statistics() {
-        super($("#stat"));
+    public Statistics(SelenideDriver driver) {
+        super(driver, driver.$("#stat"));
+        chart = self.find("#chart canvas");
+        bubbles = driver.$$("#legend-container li");
+        legendTable = driver.$$("#legend-container ul li");
     }
 
     @Step("Check the chart image")
