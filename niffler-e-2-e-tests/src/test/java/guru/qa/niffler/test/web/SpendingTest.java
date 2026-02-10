@@ -1,7 +1,6 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
@@ -70,7 +69,9 @@ public class SpendingTest {
         Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkThatPageLoaded()
-                .checkChartImage(expected);
+                .checkSpends(user.testData().spendings())
+                .checkChartImage(expected)
+                .checkLegendList(user.testData().spendings());
     }
 
     @User(
@@ -85,6 +86,7 @@ public class SpendingTest {
         Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkThatPageLoaded()
+                .checkSpends(user.testData().spendings())
                 .editSpending("Обучение Advanced 2.0")
                 .setNewSpendingAmount(79990)
                 .saveSpending()
@@ -111,10 +113,10 @@ public class SpendingTest {
         Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkThatPageLoaded()
+                .checkSpends(user.testData().spendings())
                 .deleteSpending("Обучение Advanced 1.0")
                 .checkChartImage(expected)
-                .checkLegendList()
-                .checkBubbles(Color.yellow);
+                .checkLegendList();
     }
 
     @User(
@@ -133,8 +135,36 @@ public class SpendingTest {
         Selenide.open(LoginPage.URL, LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkThatPageLoaded()
+                .checkSpends(user.testData().spendings())
                 .checkChartImage(expected)
-                .checkLegendList()
-                .checkBubbles(Color.yellow, Color.green);
+                .checkLegendList(user.testData().spendings());
+    }
+
+    @User(
+            categories = @Category(
+                    name = "Обучение архив",
+                    archived = true
+            ),
+            spendings = {
+                    @Spending(
+                            category = "Обучение архив",
+                            description = "Обучение Advanced 1.0",
+                            amount = 79990
+                    ),
+                    @Spending(
+                            category = "Обучение",
+                            description = "Обучение Advanced 2.0",
+                            amount = 79990
+                    )
+            }
+    )
+    @ScreenShotTest("img/expected-stat-several.png")
+    void checkStatComponentForSeveralSpendingsTest(UserJson user, BufferedImage expected) throws IOException {
+        Selenide.open(LoginPage.URL, LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .checkThatPageLoaded()
+                .checkSpends(user.testData().spendings())
+                .checkChartImage(expected)
+                .checkLegendList(user.testData().spendings());
     }
 }
