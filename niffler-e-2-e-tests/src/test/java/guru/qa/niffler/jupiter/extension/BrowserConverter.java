@@ -10,13 +10,13 @@ public class BrowserConverter implements ArgumentConverter {
 
     @Override
     public Object convert(Object source, ParameterContext context) throws ArgumentConversionException {
-        if (source instanceof String) {
-            return new SelenideDriver(getConfig(String.valueOf(source)));
+        if (source instanceof Browser browser) {
+            return new SelenideDriver(getConfig(browser));
         }
         throw new ArgumentConversionException("Wrong argument type");
     }
 
-    private SelenideConfig getConfig(String browser) {
-        return new SelenideConfig().browser(browser);
+    private SelenideConfig getConfig(Browser browser) {
+        return new SelenideConfig().browser(browser.name());
     }
 }

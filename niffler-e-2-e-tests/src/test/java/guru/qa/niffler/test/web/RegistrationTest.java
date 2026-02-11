@@ -1,8 +1,8 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.Browsers;
 import com.codeborne.selenide.SelenideDriver;
 import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.jupiter.extension.Browser;
 import guru.qa.niffler.jupiter.extension.BrowserConverter;
 import guru.qa.niffler.jupiter.extension.NonStaticBrowserExtension;
 import guru.qa.niffler.model.UserJson;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class RegistrationTest {
 
@@ -23,7 +23,7 @@ class RegistrationTest {
     private static final SelenideDriver driver = new SelenideDriver(SelenideUtils.getChromeConfig());
 
     @ParameterizedTest
-    @CsvSource({Browsers.CHROME, Browsers.EDGE})
+    @EnumSource(Browser.class)
     @DisplayName("Успешная регистрация нового пользователя")
     void shouldRegisterNewUser(@ConvertWith(BrowserConverter.class) SelenideDriver driver) {
         String username = RandomDataUtils.randomUsername();
@@ -44,7 +44,7 @@ class RegistrationTest {
 
     @User
     @ParameterizedTest
-    @CsvSource({Browsers.CHROME, Browsers.EDGE})
+    @EnumSource(Browser.class)
     @DisplayName("Ошибка при попытке регистрации существующего пользователя")
     void shouldNotRegisterUserWithExistingUsername(@ConvertWith(BrowserConverter.class) SelenideDriver driver, UserJson user) {
         driver.open(LoginPage.URL);
@@ -60,7 +60,7 @@ class RegistrationTest {
     }
 
     @ParameterizedTest
-    @CsvSource({Browsers.CHROME, Browsers.EDGE})
+    @EnumSource(Browser.class)
     @DisplayName("Ошибка при несовпадении паролей")
     void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual(@ConvertWith(BrowserConverter.class) SelenideDriver driver) {
         String username = RandomDataUtils.randomUsername();
