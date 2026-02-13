@@ -1,15 +1,18 @@
 package guru.qa.niffler.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.api.AuthApi;
+import guru.qa.niffler.api.core.CodeInterceptor;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
+import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
 import guru.qa.niffler.service.RestClient;
+import guru.qa.niffler.utils.OauthUtils;
 import io.qameta.allure.Step;
-import org.apache.commons.lang3.StringUtils;
+import lombok.SneakyThrows;
 import retrofit2.Response;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
-import java.util.Objects;
 
 @ParametersAreNonnullByDefault
 public final class AuthApiClient extends RestClient {
@@ -17,7 +20,7 @@ public final class AuthApiClient extends RestClient {
     private final AuthApi authApi;
 
     public AuthApiClient() {
-        super(CFG.authUrl(), true);
+        super(CFG.authUrl(), true, new CodeInterceptor());
         this.authApi = create(AuthApi.class);
     }
 
@@ -32,38 +35,36 @@ public final class AuthApiClient extends RestClient {
         ).execute();
     }
 
-    @Step("Authorize the client")
-    public Response<Void> authorize(String codeChallenge) throws IOException {
-        return authApi.authorize(
-                        "code",
-                        "client",
-                        "openid",
-                        CFG.frontUrl() + "authorized",
-                        codeChallenge,
-                        "S256")
-                .execute();
-    }
+    @SneakyThrows
+    public String login(String username, String password) {
+        String codeVerifier = OauthUtils.generateCodeVerifier();
+        String codeChallenge = OauthUtils.generateCodeChallenge(codeVerifier);
+        String redirectUri = CFG.frontUrl() + "authorized";
+        String clientId = "client";
 
-    @Step("Login user with a password")
-    public String login(String username, String password) throws IOException {
-        var response = authApi.login(
-                        username,
-                        password,
-                        ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN"))
-                .execute();
-        return StringUtils.substringAfter(response.raw().request().url().toString(), "code=");
-    }
+        authApi.authorize(
+                "code",
+                clientId,
+                "openid",
+                redirectUri,
+                codeChallenge,
+                "S256"
+        ).execute();
 
-    @Step("Get an access token")
-    public String token(String code, String codeVerifier) throws IOException {
-        authApi.requestRegisterForm().execute();
-        var response = authApi.token(
-                        "client",
-                        CFG.frontUrl() + "authorized",
-                        "authorization_code",
-                        code,
-                        codeVerifier)
-                .execute();
-        return Objects.requireNonNull(response.body()).path("id_token").asText();
+        authApi.login(
+                username,
+                password,
+                ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN")
+        ).execute();
+
+        Response<JsonNode> tokenResponse = authApi.token(
+                clientId,
+                redirectUri,
+                "authorization_code",
+                ApiLoginExtension.getCode(),
+                codeVerifier
+        ).execute();
+
+        return tokenResponse.body().get("id_token").asText();
     }
 }

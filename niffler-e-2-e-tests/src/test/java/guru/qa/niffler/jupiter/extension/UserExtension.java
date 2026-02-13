@@ -46,11 +46,7 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
                                            new ArrayList<>(),
                                            new ArrayList<>()
                                    );
-
-                                   context.getStore(NAMESPACE).put(
-                                           context.getUniqueId(),
-                                           user.addTestData(testData)
-                                   );
+                                   setUser(user.addTestData(testData));
                                }
                            }
                 );
@@ -66,6 +62,14 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
     public UserJson resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws
             ParameterResolutionException {
         return createdUser().orElseThrow();
+    }
+
+    public static void setUser(UserJson testUser) {
+        final ExtensionContext context = TestMethodContextExtension.context();
+        context.getStore(NAMESPACE).put(
+                context.getUniqueId(),
+                testUser
+        );
     }
 
     public static Optional<UserJson> createdUser() {

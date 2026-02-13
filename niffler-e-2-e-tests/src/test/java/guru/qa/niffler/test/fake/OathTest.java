@@ -1,14 +1,12 @@
 package guru.qa.niffler.test.fake;
 
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
+import guru.qa.niffler.jupiter.annotation.Token;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.impl.AuthApiClient;
-import guru.qa.niffler.utils.OauthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,17 +14,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class OathTest {
 
-    private final AuthApiClient authApi = new AuthApiClient();
-
     @Test
     @User
-    void ouathTest(UserJson user) throws IOException {
-        String codeVerifier = OauthUtils.generateCodeVerifier();
-        String codeChallenge = OauthUtils.generateCodeChallenge(codeVerifier);
-        authApi.authorize(codeChallenge);
-        String code = authApi.login(user.username(), user.testData().password());
-        String token = authApi.token(code, codeVerifier);
-        log.info("token: {}", token);
+    @ApiLogin
+    void ouathTest1(@Token String token, UserJson user) {
+        log.info("user: {}", user);
+        assertThat(token).isNotNull();
+    }
+
+    @Test
+    @ApiLogin(username = "dima", password = "12345")
+    void ouathTest2(@Token String token, UserJson user) {
+        log.info("user: {}", user);
         assertThat(token).isNotNull();
     }
 }
