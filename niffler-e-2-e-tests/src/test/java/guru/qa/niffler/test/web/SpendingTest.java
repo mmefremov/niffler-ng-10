@@ -1,6 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
@@ -8,7 +9,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
 
@@ -29,12 +30,12 @@ public class SpendingTest {
             }
     )
     @Test
+    @ApiLogin
     void spendingDescriptionShouldBeEditedByTableAction(UserJson user) {
         final String spendDescription = user.testData().spendings().getFirst().description();
         final String newDescription = "Обучение Niffler Next Generation";
 
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .editSpending(spendDescription)
                 .setNewSpendingDescription(newDescription)
                 .saveSpending()
@@ -44,10 +45,10 @@ public class SpendingTest {
 
     @User
     @Test
+    @ApiLogin
     void addNewSpending(UserJson user) {
         String newDescription = RandomDataUtils.randomSentence(1);
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .addSpending()
                 .setNewSpendingAmount(RandomDataUtils.randomInteger())
                 .setNewSpendingCategory(RandomDataUtils.randomCategoryName())
@@ -64,10 +65,10 @@ public class SpendingTest {
                     amount = 79990
             )
     )
+    @ApiLogin
     @ScreenShotTest("img/expected-stat.png")
     void checkStatComponentTest(UserJson user, BufferedImage expected) throws IOException {
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .checkThatPageLoaded()
                 .checkSpends(user.testData().spendings())
                 .checkChartImage(expected)
@@ -81,10 +82,10 @@ public class SpendingTest {
                     amount = 99990
             )
     )
+    @ApiLogin
     @ScreenShotTest("img/expected-stat.png")
     void checkStatComponentAfterEditingSpending(UserJson user, BufferedImage expected) throws IOException {
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .checkThatPageLoaded()
                 .checkSpends(user.testData().spendings())
                 .editSpending("Обучение Advanced 2.0")
@@ -108,10 +109,10 @@ public class SpendingTest {
                     )
             }
     )
+    @ApiLogin
     @ScreenShotTest("img/expected-stat.png")
     void checkStatComponentAfterDeletingSpending(UserJson user, BufferedImage expected) throws IOException {
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .checkThatPageLoaded()
                 .checkSpends(user.testData().spendings())
                 .deleteSpending("Обучение Advanced 1.0")
@@ -130,10 +131,10 @@ public class SpendingTest {
                     amount = 79990
             )
     )
+    @ApiLogin
     @ScreenShotTest("img/expected-stat-archived.png")
     void checkStatComponentForArchivedSpendingTest(UserJson user, BufferedImage expected) throws IOException {
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .checkThatPageLoaded()
                 .checkSpends(user.testData().spendings())
                 .checkChartImage(expected)
@@ -158,10 +159,10 @@ public class SpendingTest {
                     )
             }
     )
+    @ApiLogin
     @ScreenShotTest("img/expected-stat-several.png")
     void checkStatComponentForSeveralSpendingsTest(UserJson user, BufferedImage expected) throws IOException {
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .checkThatPageLoaded()
                 .checkSpends(user.testData().spendings())
                 .checkChartImage(expected)
