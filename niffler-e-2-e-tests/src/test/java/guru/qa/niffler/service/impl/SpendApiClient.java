@@ -73,6 +73,10 @@ public final class SpendApiClient extends RestClient implements SpendClient {
         return requireNonNull(response.body());
     }
 
+    public List<SpendJson> allSpends(String username) {
+        return allSpends(username, null, null, null);
+    }
+
     @Nonnull
     @Step("Get all spends for '{username}'")
     public List<SpendJson> allSpends(String username,

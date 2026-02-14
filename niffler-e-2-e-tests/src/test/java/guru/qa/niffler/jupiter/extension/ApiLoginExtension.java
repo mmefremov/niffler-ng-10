@@ -6,10 +6,14 @@ import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Token;
+import guru.qa.niffler.model.FriendshipStatus;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.service.impl.AuthApiClient;
+import guru.qa.niffler.service.impl.SpendApiClient;
+import guru.qa.niffler.service.impl.UsersApiClient;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -19,6 +23,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 import java.util.Optional;
 
 @ParametersAreNonnullByDefault
@@ -29,6 +34,10 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ApiLoginExtension.class);
 
     private final AuthApiClient authApiClient = new AuthApiClient();
+
+    private final SpendApiClient spendApiClient = new SpendApiClient();
+
+    private final UsersApiClient usersApiClient = new UsersApiClient();
 
     private final boolean setupBrowser;
 
@@ -56,16 +65,12 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
                         }
                         userToLogin = userFromUserExtension.get();
                     } else {
-                        UserJson fakeUser = new UserJson(
-                                apiLogin.username(),
-                                new TestData(
-                                        apiLogin.password()
-                                ));
                         if (userFromUserExtension.isPresent()) {
                             throw new IllegalStateException("@User must not be present in case that @ApiLogin contains username or password!");
                         }
-                        UserExtension.setUser(fakeUser);
-                        userToLogin = fakeUser;
+                        UserJson enrichedUser = getEnrichedUser(apiLogin);
+                        UserExtension.setUser(enrichedUser);
+                        userToLogin = enrichedUser;
                     }
 
                     final String token = authApiClient.login(
@@ -85,6 +90,25 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
                         Selenide.open(MainPage.URL, MainPage.class).checkThatPageLoaded();
                     }
                 });
+    }
+
+    private @NonNull UserJson getEnrichedUser(ApiLogin apiLogin) {
+        String username = apiLogin.username();
+        List<UserJson> friendsList = usersApiClient.getFriends(username);
+        List<UserJson> acceptedInvitations = friendsList.stream()
+                .filter(userJson -> userJson.friendshipStatus() == FriendshipStatus.FRIEND)
+                .toList();
+        List<UserJson> incomeInvitations = friendsList.stream()
+                .filter(userJson -> userJson.friendshipStatus() == FriendshipStatus.INVITE_RECEIVED)
+                .toList();
+        List<UserJson> outcomeInvitations = usersApiClient.getAll(username).stream()
+                .filter(userJson -> userJson.friendshipStatus() == FriendshipStatus.INVITE_SENT)
+                .toList();
+        TestData testData = new TestData(apiLogin.password(), acceptedInvitations, incomeInvitations, outcomeInvitations);
+        testData.addSpendings(spendApiClient.allSpends(username));
+        testData.addCategories(spendApiClient.allCategories(username));
+
+        return new UserJson(username, testData);
     }
 
     @Override
