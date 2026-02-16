@@ -7,7 +7,6 @@ import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.ProfilePage;
 import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -22,12 +21,11 @@ class ProfileTest {
     @User(
             categories = @Category(archived = true)
     )
+    @ApiLogin
     @Test
     @DisplayName("Профиль содержит архивную категорию")
     void archivedCategoryShouldPresentInCategoriesList(UserJson user) {
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
-                .openProfile()
+        Selenide.open(ProfilePage.URL, ProfilePage.class)
                 .showArchivedCategories()
                 .checkArchivedCategoryIsDisplayed(user.testData().categories().getFirst().name())
                 .unarchiveCategory(user.testData().categories().getFirst().name())
@@ -38,11 +36,10 @@ class ProfileTest {
             categories = @Category(archived = false)
     )
     @Test
+    @ApiLogin
     @DisplayName("Профиль содержит активную категорию")
     void activeCategoryShouldPresentInCategoriesList(UserJson user) {
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
-                .openProfile()
+        Selenide.open(ProfilePage.URL, ProfilePage.class)
                 .checkActiveCategoryIsDisplayed(user.testData().categories().getFirst().name())
                 .archiveCategory(user.testData().categories().getFirst().name())
                 .showArchivedCategories()
@@ -51,12 +48,11 @@ class ProfileTest {
 
     @User
     @Test
+    @ApiLogin
     @DisplayName("Редактирование имени профиля")
-    void nameShouldBeEditedInProfile(UserJson user) {
+    void nameShouldBeEditedInProfile() {
         String newName = RandomDataUtils.randomName();
-        Selenide.open(LoginPage.URL, LoginPage.class)
-                .login(user.username(), user.testData().password())
-                .openProfile()
+        Selenide.open(ProfilePage.URL, ProfilePage.class)
                 .setNewName(newName)
                 .saveChanges()
                 .checkAlert("Profile successfully updated");
