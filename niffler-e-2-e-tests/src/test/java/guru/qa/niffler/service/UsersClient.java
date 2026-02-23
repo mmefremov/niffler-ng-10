@@ -13,9 +13,9 @@ public interface UsersClient {
 
     @Nonnull
     static UsersClient getInstance() {
-        return "api".equals(System.getProperty("client.impl"))
-                ? new UsersApiClient()
-                : new UsersDbClient();
+        return "db".equals(System.getProperty("client.impl"))
+                ? new UsersDbClient()
+                : new UsersApiClient();
     }
     
     @Nonnull

@@ -15,9 +15,9 @@ public interface SpendClient {
 
     @Nonnull
     static SpendClient getInstance() {
-        return "api".equals(System.getProperty("client.impl"))
-                ? new SpendApiClient()
-                : new SpendDbClient();
+        return "db".equals(System.getProperty("client.impl"))
+                ? new SpendDbClient()
+                : new SpendApiClient();
     }
 
     @Nullable

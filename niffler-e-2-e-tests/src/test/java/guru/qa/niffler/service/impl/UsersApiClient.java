@@ -40,7 +40,7 @@ public class UsersApiClient extends RestClient implements UsersClient {
         Response<UserJson> response;
         try {
             Response<Void> authResponse = authApiClient.register(username, password);
-            assertThat(authResponse.code()).isEqualTo(HttpStatus.OK_200);
+            assertThat(authResponse.code()).isEqualTo(HttpStatus.CREATED_201);
 
             Stopwatch sw = Stopwatch.createStarted();
             long maxWaitTime = 10_000;

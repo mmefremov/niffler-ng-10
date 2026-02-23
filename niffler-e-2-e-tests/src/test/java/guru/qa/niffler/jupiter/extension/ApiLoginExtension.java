@@ -123,7 +123,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
     }
 
     public static void setToken(String token) {
-        TestMethodContextExtension.context().getStore(NAMESPACE).put("token", token);
+        TestMethodContextExtension.context().getStore(NAMESPACE).put("token", "Bearer " + token);
     }
 
     public static String getToken() {
