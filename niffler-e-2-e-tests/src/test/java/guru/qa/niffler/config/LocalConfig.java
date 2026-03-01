@@ -61,6 +61,12 @@ enum LocalConfig implements Config {
 
     @Nonnull
     @Override
+    public String currencyGrpcAddress() {
+        return "localhost";
+    }
+
+    @Nonnull
+    @Override
     public String githubUrl() {
         return "https://api.github.com/";
     }

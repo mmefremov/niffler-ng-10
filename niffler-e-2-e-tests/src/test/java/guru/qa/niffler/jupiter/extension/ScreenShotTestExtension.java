@@ -50,7 +50,7 @@ public class ScreenShotTestExtension implements BeforeEachCallback, AfterEachCal
                         BufferedImage actual = getActual();
                         try {
                             File expectedFile = Path.of("src", "test", "resources", anno.value()).toFile();
-                            ImageIO.write(actual, "png1", expectedFile);
+                            ImageIO.write(actual, "png", expectedFile);
                         } catch (IOException e) {
                             throw new RuntimeException("Can't write actual image", e);
                         }

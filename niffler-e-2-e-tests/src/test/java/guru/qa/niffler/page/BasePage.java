@@ -24,7 +24,7 @@ public abstract class BasePage<T extends BasePage<?>> {
     @Nonnull
     @Step("Check that alert message appears: {text}")
     public T checkAlert(String text) {
-        alert.shouldHave(text(text));
+        alert.scrollTo().shouldHave(text(text));
         return (T) this;
     }
 }
