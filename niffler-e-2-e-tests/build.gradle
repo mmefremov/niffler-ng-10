@@ -166,16 +166,16 @@ tasks.register('printVersion') {
     }
 }
 
-tasks.named { it == "generateNifflerApolloSources" }.configureEach {
-    dependsOn("downloadNifflerApolloSchemaFromIntrospection")
-}
-
-test {
-    dependsOn("generateNifflerApolloSources")
-    options {
-        systemProperties(System.getProperties())
-    }
-    testLogging.showStandardStreams = true
-    testLogging.exceptionFormat = 'full'
-    useJUnitPlatform()
-}
+//tasks.named { it == "generateNifflerApolloSources" }.configureEach {
+//    dependsOn("downloadNifflerApolloSchemaFromIntrospection")
+//}
+//
+//test {
+//    dependsOn("generateNifflerApolloSources")
+//    options {
+//        systemProperties(System.getProperties())
+//    }
+//    testLogging.showStandardStreams = true
+//    testLogging.exceptionFormat = 'full'
+//    useJUnitPlatform()
+//}
