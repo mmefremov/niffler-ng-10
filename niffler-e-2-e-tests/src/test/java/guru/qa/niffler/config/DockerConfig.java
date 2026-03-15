@@ -37,6 +37,12 @@ public enum DockerConfig implements Config {
 
     @Nonnull
     @Override
+    public String userdataGrpcAddress() {
+        return "";
+    }
+
+    @Nonnull
+    @Override
     public String userdataJdbcUrl() {
         return "";
     }
