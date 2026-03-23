@@ -69,6 +69,7 @@ public class GrpcUserService extends NifflerUserdataServiceGrpc.NifflerUserdataS
         responseObserver.onCompleted();
     }
 
+    @Override
     public void acceptInvitation(FriendshipRequest request, StreamObserver<UserData> responseObserver) {
         var user = userService.acceptFriendshipRequest(request.getRequester(), request.getAddressee());
         responseObserver.onNext(createFromJson(user));
@@ -92,7 +93,7 @@ public class GrpcUserService extends NifflerUserdataServiceGrpc.NifflerUserdataS
                 .map(this::createFromJson)
                 .toList();
         responseObserver.onNext(ListUsersResponse.newBuilder()
-                                        .setTotalElements(usersPage.getSize())
+                                        .setTotalElements(Math.toIntExact(usersPage.getTotalElements()))
                                         .setTotalPages((Math.toIntExact(usersPage.getTotalPages())))
                                         .setFirst(usersPage.isFirst())
                                         .setLast(usersPage.isLast())
