@@ -37,6 +37,12 @@ enum LocalConfig implements Config {
 
     @Nonnull
     @Override
+    public String userdataGrpcAddress() {
+        return "localhost";
+    }
+
+    @Nonnull
+    @Override
     public String userdataJdbcUrl() {
         return "jdbc:postgresql://localhost:5432/niffler-userdata";
     }

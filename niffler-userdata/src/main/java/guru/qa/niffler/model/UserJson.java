@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.CurrencyValues;
 import guru.qa.niffler.data.UserEntity;
+import guru.qa.niffler.grpc.UserData;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jaxb.userdata.Currency;
@@ -64,6 +65,20 @@ public record UserJson(
             : null
     );
   }
+
+    public static @Nonnull UserJson fromMessage(@Nonnull UserData messageUser) {
+        return new UserJson(
+                UUID.fromString(messageUser.getId()),
+                messageUser.getUsername(),
+                messageUser.getFirstname(),
+                messageUser.getSurname(),
+                messageUser.getFullname(),
+                CurrencyValues.valueOf(messageUser.getCurrency().name()),
+                messageUser.getPhoto(),
+                messageUser.getPhotoSmall(),
+                FriendshipStatus.valueOf(messageUser.getFriendshipStatus().name())
+        );
+    }
 
   public static @Nonnull UserJson fromEntity(@Nonnull UserEntity entity, @Nullable FriendshipStatus friendshipStatus) {
     return new UserJson(

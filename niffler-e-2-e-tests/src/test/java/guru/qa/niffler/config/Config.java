@@ -30,6 +30,13 @@ public interface Config {
     String userdataJdbcUrl();
 
     @Nonnull
+    String userdataGrpcAddress();
+
+    default int userdataGrpcPort() {
+        return 8088;
+    }
+
+    @Nonnull
     String spendUrl();
 
     @Nonnull
