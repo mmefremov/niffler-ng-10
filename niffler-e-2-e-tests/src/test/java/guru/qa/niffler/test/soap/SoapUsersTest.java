@@ -21,9 +21,10 @@ public class SoapUsersTest {
     @DisplayName("Список друзей получен в виде Page при передаче параметров page, size")
     @User(friends = 3)
     void friendListShouldBePageable(UserJson user) throws IOException {
-        var response = userdataSoapClient.friends(user.username(), 0, 2);
+        var response = userdataSoapClient.friends(user.username(), 0, 3);
         assertThat(response.getTotalElements()).isEqualTo(3);
-        assertThat(response.getUser()).extracting(guru.qa.jaxb.userdata.User::getFriendshipStatus)
+        assertThat(response.getUser()).hasSize(1)
+                .extracting(guru.qa.jaxb.userdata.User::getFriendshipStatus)
                 .allMatch(status -> status == FriendshipStatus.FRIEND);
     }
 
@@ -34,7 +35,8 @@ public class SoapUsersTest {
         String friendName = user.testData().friends().getFirst().username();
         var response = userdataSoapClient.friends(user.username(), friendName);
         assertThat(response.getTotalElements()).isOne();
-        assertThat(response.getUser().getFirst()).matches(
+        assertThat(response.getUser()).hasSize(1)
+                .first().matches(
                 friend -> friend.getUsername().equals(friendName) && friend.getFriendshipStatus() == FriendshipStatus.FRIEND);
     }
 
