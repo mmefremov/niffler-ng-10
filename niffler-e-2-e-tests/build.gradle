@@ -179,3 +179,27 @@ test {
     testLogging.exceptionFormat = 'full'
     useJUnitPlatform()
 }
+
+tasks.named { it == "schemaGen_guru-qa-jaxb-userdata" }.configureEach {
+    dependsOn("downloadWsdl")
+}
+
+tasks.register('downloadWsdl') {
+    def wsdlFile = file("src/test/schemas/xjc/userdata.wsdl")
+    outputs.file(wsdlFile)
+
+    doLast {
+        println "Try downloading WSDL schema from $userdataWsdlUrl"
+        wsdlFile.parentFile.mkdirs()
+        try {
+            new URI(userdataWsdlUrl).toURL().openStream().withStream { input ->
+                wsdlFile.withOutputStream { out -> input.transferTo(out) }
+            }
+            def relativePath = project.relativePath(wsdlFile)
+            println "WSDL schema successfully downloaded to $relativePath"
+        } catch (Exception e) {
+            println "WSDL schema download failed: ${e.message}"
+            throw e
+        }
+    }
+}
